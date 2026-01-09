@@ -1,0 +1,282 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Architecture Hexagonale - Visualisation{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-b from-blue-50 via-indigo-50 to-white py-6 sm:py-12">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+
+        {# Header #}
+        <div class="text-center mb-8 sm:mb-12 animate-fadeInUp">
+            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 sm:mb-6 shadow-xl transform hover:scale-110 transition-transform duration-300">
+                <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
+                <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                    Architecture Hexagonale
+                </span>
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-2 max-w-3xl mx-auto px-4">
+                Visualisation Interactive des Dépendances
+            </p>
+            <p class="text-xs sm:text-sm text-gray-500 flex items-center justify-center gap-2 flex-wrap px-4">
+                <span class="inline-flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    Explorez l'architecture
+                </span>
+                <span class="text-gray-300 hidden sm:inline">•</span>
+                <span class="inline-flex items-center">
+                    <svg class="w-4 h-4 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                    </svg>
+                    Cliquez pour interagir
+                </span>
+            </p>
+        </div>
+
+        {# Interactive Graph Diagram #}
+        {% include 'components/architecture_diagram.html.twig' with {
+            'title': '🎯 Architecture Hexagonale - Vue Graphe Interactif'
+        } %}
+
+        {# Hexagon Shape Diagram #}
+        <div class="mt-8">
+            {% include 'components/hexagon_diagram.html.twig' with {
+                'title': '⬡ Architecture Hexagonale - Vue Hexagone (Ports & Adapters)'
+            } %}
+        </div>
+
+        {# Explications #}
+        <div class="grid sm:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+
+            {# Principes #}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl p-5 sm:p-6 card-hover border border-blue-100 transition-all duration-300">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mr-3 sm:mr-4 shadow-md">
+                        <span class="text-2xl sm:text-3xl">📐</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        Principes Clés
+                    </h2>
+                </div>
+                <ul class="space-y-2 sm:space-y-3">
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-blue-700">Domain au centre</strong> <span class="text-gray-600">- Logique métier pure, aucune dépendance externe</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-cyan-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-cyan-700">Application orchestre</strong> <span class="text-gray-600">- CQRS avec Commands et Queries</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-green-700">Infrastructure adapte</strong> <span class="text-gray-600">- Implémente les Ports (Doctrine, APIs, etc.)</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-amber-700">UI présente</strong> <span class="text-gray-600">- Controllers, Forms, Templates</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            {# Avantages #}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl p-5 sm:p-6 card-hover border border-green-100 transition-all duration-300">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl flex items-center justify-center mr-3 sm:mr-4 shadow-md">
+                        <span class="text-2xl sm:text-3xl">🎯</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        Avantages
+                    </h2>
+                </div>
+                <ul class="space-y-2 sm:space-y-3">
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-green-700">Testabilité</strong> <span class="text-gray-600">- Domain testable sans framework</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-green-700">Maintenabilité</strong> <span class="text-gray-600">- Séparation claire des responsabilités</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-green-700">Flexibilité</strong> <span class="text-gray-600">- Changez Infrastructure sans toucher Domain</span>
+                        </div>
+                    </li>
+                    <li class="flex items-start group hover:translate-x-1 transition-transform duration-200">
+                        <span class="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-2 sm:mr-3 mt-0.5">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div class="text-sm sm:text-base">
+                            <strong class="text-green-700">Évolutivité</strong> <span class="text-gray-600">- Ajoutez facilement de nouveaux adapters</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {# Layers Details #}
+        <div class="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+
+            {# Domain #}
+            <div class="group bg-gradient-to-br from-blue-50 via-blue-100 to-blue-50 rounded-xl p-4 sm:p-6 border-2 border-blue-300 hover:border-blue-500 card-hover hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                <div class="text-center mb-3">
+                    <div class="inline-flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl sm:text-3xl">🎯</span>
+                    </div>
+                </div>
+                <h3 class="font-bold text-blue-900 text-center mb-1 text-base sm:text-lg">DOMAIN</h3>
+                <p class="text-xs sm:text-sm text-blue-800 text-center mb-3 font-medium">Cœur Métier</p>
+                <ul class="text-xs sm:text-sm space-y-1.5 text-blue-900">
+                    <li class="flex items-center"><span class="mr-1.5 text-blue-500">▪</span> Entités (Habitant, Cadeau)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-blue-500">▪</span> ValueObjects (Age, Email)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-blue-500">▪</span> Ports (interfaces)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-blue-500">▪</span> Logique métier pure</li>
+                </ul>
+            </div>
+
+            {# Application #}
+            <div class="group bg-gradient-to-br from-cyan-50 via-cyan-100 to-cyan-50 rounded-xl p-4 sm:p-6 border-2 border-cyan-300 hover:border-cyan-500 card-hover hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                <div class="text-center mb-3">
+                    <div class="inline-flex items-center justify-center bg-gradient-to-br from-cyan-500 to-cyan-600 text-white w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl sm:text-3xl">⚙️</span>
+                    </div>
+                </div>
+                <h3 class="font-bold text-cyan-900 text-center mb-1 text-base sm:text-lg">APPLICATION</h3>
+                <p class="text-xs sm:text-sm text-cyan-800 text-center mb-3 font-medium">Use Cases</p>
+                <ul class="text-xs sm:text-sm space-y-1.5 text-cyan-900">
+                    <li class="flex items-center"><span class="mr-1.5 text-cyan-500">▪</span> Commands/Queries</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-cyan-500">▪</span> Handlers (CQRS)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-cyan-500">▪</span> DTOs (Responses)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-cyan-500">▪</span> Orchestration</li>
+                </ul>
+            </div>
+
+            {# Infrastructure #}
+            <div class="group bg-gradient-to-br from-green-50 via-green-100 to-green-50 rounded-xl p-4 sm:p-6 border-2 border-green-300 hover:border-green-500 card-hover hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                <div class="text-center mb-3">
+                    <div class="inline-flex items-center justify-center bg-gradient-to-br from-green-500 to-green-600 text-white w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl sm:text-3xl">🔌</span>
+                    </div>
+                </div>
+                <h3 class="font-bold text-green-900 text-center mb-1 text-base sm:text-lg">INFRASTRUCTURE</h3>
+                <p class="text-xs sm:text-sm text-green-800 text-center mb-3 font-medium">Adapters</p>
+                <ul class="text-xs sm:text-sm space-y-1.5 text-green-900">
+                    <li class="flex items-center"><span class="mr-1.5 text-green-500">▪</span> Repositories Doctrine</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-green-500">▪</span> Custom Types</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-green-500">▪</span> Persistence (ORM)</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-green-500">▪</span> APIs externes</li>
+                </ul>
+            </div>
+
+            {# UI #}
+            <div class="group bg-gradient-to-br from-amber-50 via-amber-100 to-amber-50 rounded-xl p-4 sm:p-6 border-2 border-amber-300 hover:border-amber-500 card-hover hover:scale-105 transition-all duration-300 shadow-md hover:shadow-xl">
+                <div class="text-center mb-3">
+                    <div class="inline-flex items-center justify-center bg-gradient-to-br from-amber-500 to-amber-600 text-white w-14 h-14 sm:w-16 sm:h-16 rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl sm:text-3xl">🖥️</span>
+                    </div>
+                </div>
+                <h3 class="font-bold text-amber-900 text-center mb-1 text-base sm:text-lg">UI</h3>
+                <p class="text-xs sm:text-sm text-amber-800 text-center mb-3 font-medium">Présentation</p>
+                <ul class="text-xs sm:text-sm space-y-1.5 text-amber-900">
+                    <li class="flex items-center"><span class="mr-1.5 text-amber-500">▪</span> Controllers Web</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-amber-500">▪</span> Forms Symfony</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-amber-500">▪</span> Templates Twig</li>
+                    <li class="flex items-center"><span class="mr-1.5 text-amber-500">▪</span> Validation</li>
+                </ul>
+            </div>
+        </div>
+
+        {# Validation Deptrac #}
+        <div class="mt-6 sm:mt-8 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 rounded-2xl shadow-lg hover:shadow-2xl p-5 sm:p-8 border-2 border-green-300 transition-all duration-300">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex-1 text-center sm:text-left">
+                    <div class="flex items-center justify-center sm:justify-start mb-3">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-green-500 rounded-2xl flex items-center justify-center mr-3 shadow-lg">
+                            <span class="text-2xl sm:text-3xl">✅</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-green-900">
+                            Architecture Validée
+                        </h2>
+                    </div>
+                    <p class="text-sm sm:text-base text-green-800 mb-2">
+                        <span class="inline-flex items-center px-3 py-1 bg-green-500 text-white rounded-full text-sm font-bold mr-2">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            0 violations
+                        </span>
+                        Application conforme à 100% aux principes hexagonaux
+                    </p>
+                    <p class="text-xs sm:text-sm text-green-700 bg-white/50 px-3 py-2 rounded-lg inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <code class="font-mono text-green-800 font-semibold">composer deptrac</code>
+                    </p>
+                </div>
+                <div class="text-5xl sm:text-6xl animate-pulse-soft">
+                    🏆
+                </div>
+            </div>
+        </div>
+
+        {# Back Button #}
+        <div class="mt-8 sm:mt-12 text-center pb-6">
+            <a href="{{ path('app.home') }}" class="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 font-medium text-sm sm:text-base group">
+                <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

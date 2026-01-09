@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Cadeaux{% endblock %}
+
+{% block body %}
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {# Header #}
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <svg class="w-8 h-8 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                        </svg>
+                        Liste des Cadeaux
+                    </h1>
+                    <p class="mt-2 text-gray-600">
+                        Explorez le catalogue complet des cadeaux disponibles
+                    </p>
+                </div>
+                <a href="{{ path('app.cadeau.attribution.list_habitants') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    Voir les habitants
+                </a>
+            </div>
+        </div>
+
+        {% if cadeaux is empty %}
+            {# Empty State #}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun cadeau disponible</h3>
+                <p class="text-gray-500">Le catalogue est vide pour le moment.</p>
+            </div>
+        {% else %}
+            {# Stats Bar #}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                <div class="flex items-center justify-between">
+                    <p class="text-sm text-gray-600">
+                        <span class="font-semibold text-gray-900 text-lg">{{ cadeaux|length }}</span> cadeau(x) au catalogue
+                    </p>
+                </div>
+            </div>
+
+            {# Cards Grid #}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for cadeau in cadeaux %}
+                    <div class="bg-white rounded-xl shadow-sm border {% if cadeau.isEnStock %}border-gray-200{% else %}border-red-300{% endif %} hover:shadow-md transition-shadow overflow-hidden">
+                        {# Card Header with gradient #}
+                        <div class="h-2 {% if cadeau.isEnStock %}bg-gradient-to-r from-green-400 to-green-600{% else %}bg-gradient-to-r from-red-400 to-red-600{% endif %}"></div>
+
+                        <div class="p-6">
+                            {# Title with icon #}
+                            <div class="flex items-start justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                                    </svg>
+                                    {{ cadeau.nom }}
+                                </h3>
+                            </div>
+
+                            {# Description #}
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                                {{ cadeau.description }}
+                            </p>
+
+                            {# Divider #}
+                            <div class="border-t border-gray-200 my-4"></div>
+
+                            {# Stock and ID info #}
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Stock</p>
+                                    {% if cadeau.isEnStock %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            {{ cadeau.quantite }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Rupture
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <code class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-600">
+                                    {{ cadeau.id[:8] }}...
+                                </code>
+                            </div>
+                        </div>
+
+                        {# Card Footer #}
+                        <div class="{% if cadeau.isEnStock %}bg-green-50{% else %}bg-red-50{% endif %} px-6 py-3 border-t border-gray-100">
+                            <div class="flex items-center text-sm">
+                                {% if cadeau.isEnStock %}
+                                    <svg class="w-4 h-4 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-green-700 font-medium">Disponible</span>
+                                {% else %}
+                                    <svg class="w-4 h-4 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-red-700 font-medium">En rupture de stock</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: hexagonal_demo_db
+    environment:
+      POSTGRES_DB: hexagonal_demo
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d hexagonal_demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:

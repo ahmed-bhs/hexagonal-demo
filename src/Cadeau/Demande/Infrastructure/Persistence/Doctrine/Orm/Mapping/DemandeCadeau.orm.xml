@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Cadeau\Demande\Domain\Model\DemandeCadeau"
+            table="demande_cadeau">
+
+        <!-- Primary Key -->
+        <id name="id" type="string" length="36" />
+
+        <!-- Fields -->
+        <field name="nomDemandeur" type="string" length="100" column="nom_demandeur" />
+        <field name="emailDemandeur" type="string" length="255" column="email_demandeur" />
+        <field name="telephoneDemandeur" type="string" length="20" column="telephone_demandeur" />
+        <field name="cadeauSouhaite" type="string" length="255" column="cadeau_souhaite" />
+        <field name="motivation" type="text" column="motivation" />
+        <field name="statut" type="string" length="50" column="statut" />
+        <field name="dateCreation" type="datetime_immutable" column="date_creation" />
+
+    </entity>
+
+</doctrine-mapping>

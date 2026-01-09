@@ -1,0 +1,414 @@
+{# Hexagonal Architecture - True Hexagon Visualization #}
+<div class="hexagon-diagram-container bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl border-2 border-purple-200 p-3 sm:p-6 mb-6 sm:mb-8 transition-all duration-300">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 flex items-center">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </div>
+            <span class="text-base sm:text-xl md:text-2xl">{{ title|default('⬡ Architecture Hexagonale - Vue Hexagone') }}</span>
+        </h2>
+        <div class="text-xs sm:text-sm text-gray-600 bg-purple-50 px-3 py-1.5 rounded-lg font-medium">
+            <span class="hidden sm:inline">Ports & Adapters Pattern</span>
+            <span class="sm:hidden">Ports & Adapters</span>
+        </div>
+    </div>
+
+    {# SVG Hexagon Diagram #}
+    <div class="relative overflow-hidden rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-50 to-purple-50" style="min-height: 500px; max-height: 700px;">
+        <svg viewBox="0 0 1000 800" class="w-full h-full" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagramme hexagonal interactif des ports et adapters">
+            <defs>
+                {# Gradients #}
+                <linearGradient id="domainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="applicationGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="infraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="uiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+                </linearGradient>
+
+                {# Filter for shadows #}
+                <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="2" dy="2" result="offsetblur"/>
+                    <feComponentTransfer>
+                        <feFuncA type="linear" slope="0.3"/>
+                    </feComponentTransfer>
+                    <feMerge>
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            {# ===== HEXAGONE CENTRAL (DOMAIN) ===== #}
+            <g id="domain-hexagon" class="hexagon-layer">
+                {# Hexagone Domain #}
+                <polygon points="500,200 600,250 600,350 500,400 400,350 400,250"
+                         fill="url(#domainGradient)"
+                         stroke="#1d4ed8"
+                         stroke-width="4"
+                         filter="url(#shadow)"
+                         class="cursor-pointer hover-scale"
+                         onclick="showInfo('domain')"/>
+
+                {# Text Domain #}
+                <text x="500" y="290" text-anchor="middle" class="text-2xl font-bold fill-white">
+                    DOMAIN
+                </text>
+                <text x="500" y="315" text-anchor="middle" class="text-sm fill-white opacity-90">
+                    Cœur Métier
+                </text>
+            </g>
+
+            {# ===== HEXAGONE APPLICATION (autour du Domain) ===== #}
+            <g id="application-ring" class="hexagon-layer">
+                {# Hexagone Application (plus grand) #}
+                <polygon points="500,120 650,200 650,400 500,480 350,400 350,200"
+                         fill="url(#applicationGradient)"
+                         fill-opacity="0.7"
+                         stroke="#0891b2"
+                         stroke-width="3"
+                         stroke-dasharray="10,5"
+                         class="cursor-pointer hover-scale"
+                         onclick="showInfo('application')"/>
+
+                {# Label Application #}
+                <text x="500" y="150" text-anchor="middle" class="text-lg font-bold fill-cyan-900">
+                    APPLICATION
+                </text>
+                <text x="500" y="170" text-anchor="middle" class="text-xs fill-cyan-800">
+                    (Use Cases - CQRS)
+                </text>
+            </g>
+
+            {# ===== PORTS (Interfaces sur l'hexagone) ===== #}
+            {# Port Top #}
+            <g class="port-group" onclick="showInfo('port-top')">
+                <circle cx="500" cy="120" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="500" y="90" text-anchor="middle" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="500" y="105" text-anchor="middle" class="text-xs fill-blue-800">Query</text>
+            </g>
+
+            {# Port Top-Right #}
+            <g class="port-group" onclick="showInfo('port-tr')">
+                <circle cx="650" cy="200" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="685" y="205" text-anchor="start" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="685" y="220" text-anchor="start" class="text-xs fill-blue-800">Command</text>
+            </g>
+
+            {# Port Bottom-Right #}
+            <g class="port-group" onclick="showInfo('port-br')">
+                <circle cx="650" cy="400" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="685" y="405" text-anchor="start" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="685" y="420" text-anchor="start" class="text-xs fill-blue-800">Repository</text>
+            </g>
+
+            {# Port Bottom #}
+            <g class="port-group" onclick="showInfo('port-bottom')">
+                <circle cx="500" cy="480" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="500" y="515" text-anchor="middle" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="500" y="530" text-anchor="middle" class="text-xs fill-blue-800">Service</text>
+            </g>
+
+            {# Port Bottom-Left #}
+            <g class="port-group" onclick="showInfo('port-bl')">
+                <circle cx="350" cy="400" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="315" y="405" text-anchor="end" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="315" y="420" text-anchor="end" class="text-xs fill-blue-800">Event</text>
+            </g>
+
+            {# Port Top-Left #}
+            <g class="port-group" onclick="showInfo('port-tl')">
+                <circle cx="350" cy="200" r="25" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" class="cursor-pointer port-circle"/>
+                <text x="315" y="205" text-anchor="end" class="text-xs font-bold fill-blue-900">PORT</text>
+                <text x="315" y="220" text-anchor="end" class="text-xs fill-blue-800">API</text>
+            </g>
+
+            {# ===== ADAPTERS (autour des ports) ===== #}
+
+            {# UI Adapter (Top) #}
+            <g class="adapter-group" onclick="showInfo('ui-adapter')">
+                <rect x="400" y="10" width="200" height="70" rx="10"
+                      fill="url(#uiGradient)"
+                      stroke="#d97706"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="500" y="40" text-anchor="middle" class="text-sm font-bold fill-white">UI ADAPTER</text>
+                <text x="500" y="60" text-anchor="middle" class="text-xs fill-white opacity-90">Controllers (Primary)</text>
+
+                {# Arrow to Port - Plus longue #}
+                <line x1="500" y1="80" x2="500" y2="95" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowhead-ui)"/>
+                <text x="515" y="90" class="text-xs fill-amber-700 font-semibold">drives</text>
+            </g>
+
+            {# Infrastructure Adapter (Bottom-Right) - Doctrine #}
+            <g class="adapter-group" onclick="showInfo('infra-adapter')">
+                <rect x="710" y="360" width="230" height="70" rx="10"
+                      fill="url(#infraGradient)"
+                      stroke="#059669"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="825" y="390" text-anchor="middle" class="text-sm font-bold fill-white">INFRASTRUCTURE</text>
+                <text x="825" y="410" text-anchor="middle" class="text-xs fill-white opacity-90">Doctrine Repository (Secondary)</text>
+
+                {# Arrow to Port - Plus longue #}
+                <line x1="710" y1="395" x2="675" y2="375" stroke="#10b981" stroke-width="3" marker-end="url(#arrowhead-infra)"/>
+                <text x="690" y="380" class="text-xs fill-green-700 font-semibold">driven</text>
+            </g>
+
+            {# Infrastructure Adapter (Bottom) - Persistence #}
+            <g class="adapter-group" onclick="showInfo('persistence-adapter')">
+                <rect x="390" y="560" width="220" height="70" rx="10"
+                      fill="url(#infraGradient)"
+                      stroke="#059669"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="500" y="590" text-anchor="middle" class="text-sm font-bold fill-white">INFRASTRUCTURE</text>
+                <text x="500" y="610" text-anchor="middle" class="text-xs fill-white opacity-90">ORM Mapping (Secondary)</text>
+
+                {# Arrow to Port - Plus longue #}
+                <line x1="500" y1="560" x2="500" y2="505" stroke="#10b981" stroke-width="3" marker-end="url(#arrowhead-infra)"/>
+                <text x="515" y="535" class="text-xs fill-green-700 font-semibold">driven</text>
+            </g>
+
+            {# UI/Form Adapter (Top-Right) #}
+            <g class="adapter-group" onclick="showInfo('form-adapter')">
+                <rect x="710" y="155" width="200" height="70" rx="10"
+                      fill="url(#uiGradient)"
+                      stroke="#d97706"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="810" y="185" text-anchor="middle" class="text-sm font-bold fill-white">UI ADAPTER</text>
+                <text x="810" y="205" text-anchor="middle" class="text-xs fill-white opacity-90">Forms (Primary)</text>
+
+                {# Arrow to Port - Plus longue #}
+                <line x1="710" y1="190" x2="675" y2="200" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowhead-ui)"/>
+                <text x="690" y="188" class="text-xs fill-amber-700 font-semibold">drives</text>
+            </g>
+
+            {# External System Adapter (Bottom-Left) #}
+            <g class="adapter-group" onclick="showInfo('external-adapter')">
+                <rect x="60" y="360" width="230" height="70" rx="10"
+                      fill="url(#infraGradient)"
+                      stroke="#059669"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="175" y="390" text-anchor="middle" class="text-sm font-bold fill-white">INFRASTRUCTURE</text>
+                <text x="175" y="410" text-anchor="middle" class="text-xs fill-white opacity-90">External API (Secondary)</text>
+
+                {# Arrow to Port - Plus longue #}
+                <line x1="290" y1="395" x2="325" y2="375" stroke="#10b981" stroke-width="3" marker-end="url(#arrowhead-infra)"/>
+                <text x="300" y="380" class="text-xs fill-green-700 font-semibold">driven</text>
+            </g>
+
+            {# CLI Adapter (Top-Left) #}
+            <g class="adapter-group" onclick="showInfo('cli-adapter')">
+                <rect x="150" y="170" width="150" height="60" rx="10"
+                      fill="url(#uiGradient)"
+                      stroke="#d97706"
+                      stroke-width="2"
+                      filter="url(#shadow)"
+                      class="cursor-pointer hover-scale"/>
+                <text x="225" y="195" text-anchor="middle" class="text-sm font-bold fill-white">UI ADAPTER</text>
+                <text x="225" y="212" text-anchor="middle" class="text-xs fill-white opacity-90">CLI Commands</text>
+
+                {# Arrow to Port #}
+                <line x1="300" y1="200" x2="325" y2="200" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead-ui)"/>
+            </g>
+
+            {# Arrow markers #}
+            <defs>
+                <marker id="arrowhead-ui" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#f59e0b" />
+                </marker>
+                <marker id="arrowhead-infra" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <polygon points="0 0, 10 3, 0 6" fill="#10b981" />
+                </marker>
+            </defs>
+
+            {# Legend Text #}
+            <g id="legend">
+                <text x="500" y="680" text-anchor="middle" class="text-sm font-bold fill-gray-700">
+                    Les PORTS sont les interfaces du Domain | Les ADAPTERS implémentent les Ports
+                </text>
+                <text x="500" y="700" text-anchor="middle" class="text-xs fill-gray-600">
+                    🟠 Adapters Primaires (driving - UI) | 🟢 Adapters Secondaires (driven - Infrastructure)
+                </text>
+            </g>
+        </svg>
+    </div>
+
+    {# Info Panel #}
+    <div id="hexagon-info" class="mt-3 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 border-l-4 border-purple-500 rounded-lg shadow-md hidden animate-fadeInUp" role="alert" aria-live="polite">
+        <h3 class="font-bold text-purple-900 mb-2 text-sm sm:text-base" id="hexagon-title">Cliquez sur un élément</h3>
+        <p class="text-xs sm:text-sm text-purple-800" id="hexagon-description">Explorez l'architecture en cliquant sur les hexagones, ports ou adapters</p>
+    </div>
+    <p class="text-xs text-gray-500 mt-2 text-center sm:hidden">👆 Touchez les éléments pour plus d'infos</p>
+
+    {# Explications #}
+    <div class="mt-4 sm:mt-6 grid sm:grid-cols-2 gap-3 sm:gap-4">
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-l-4 border-amber-500 p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="flex items-center mb-2">
+                <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center mr-2 sm:mr-3 shadow-md flex-shrink-0">
+                    <span class="text-xl sm:text-2xl">🟠</span>
+                </div>
+                <h4 class="font-bold text-amber-900 text-sm sm:text-base">
+                    Adapters Primaires
+                </h4>
+            </div>
+            <p class="text-xs sm:text-sm text-amber-800 leading-relaxed">
+                <strong class="block mb-1">Utilisateurs/UI → Application</strong>
+                <span class="text-amber-700">Controllers, Forms, CLI Commands, API REST</span><br>
+                <em class="text-amber-600 block mt-1">Ils "pilotent" l'application</em>
+            </p>
+        </div>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-l-4 border-green-500 p-3 sm:p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="flex items-center mb-2">
+                <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center mr-2 sm:mr-3 shadow-md flex-shrink-0">
+                    <span class="text-xl sm:text-2xl">🟢</span>
+                </div>
+                <h4 class="font-bold text-green-900 text-sm sm:text-base">
+                    Adapters Secondaires
+                </h4>
+            </div>
+            <p class="text-xs sm:text-sm text-green-800 leading-relaxed">
+                <strong class="block mb-1">Application → Infrastructure</strong>
+                <span class="text-green-700">Repositories Doctrine, APIs externes, File System</span><br>
+                <em class="text-green-600 block mt-1">Ils sont "pilotés" par l'application</em>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-scale {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+.hover-scale:hover {
+    transform: scale(1.08);
+}
+
+@media (hover: none) and (pointer: coarse) {
+    /* Touch devices - smaller hover effect */
+    .hover-scale:active {
+        transform: scale(1.05);
+    }
+}
+
+.port-circle {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.port-circle:hover {
+    filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.6));
+}
+
+.hexagon-layer {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.adapter-group {
+    cursor: pointer;
+}
+.adapter-group:hover rect {
+    filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.35));
+}
+
+/* Improve SVG text readability on mobile */
+@media (max-width: 640px) {
+    svg text {
+        font-size: 0.9em;
+    }
+}
+</style>
+
+<script>
+function showInfo(element) {
+    const infoPanel = document.getElementById('hexagon-info');
+    const title = document.getElementById('hexagon-title');
+    const description = document.getElementById('hexagon-description');
+
+    infoPanel.classList.remove('hidden');
+
+    const infos = {
+        'domain': {
+            title: '🎯 DOMAIN (Cœur Métier)',
+            description: 'Le cœur de l\'application. Contient les Entités, ValueObjects et définit les Ports (interfaces). Ne dépend de RIEN - logique métier pure.'
+        },
+        'application': {
+            title: '⚙️ APPLICATION (Use Cases)',
+            description: 'Couche d\'orchestration. Contient les Commands, Queries et leurs Handlers (CQRS). Dépend uniquement du Domain via les Ports.'
+        },
+        'port-top': {
+            title: '🔵 PORT - Query',
+            description: 'Interface pour les requêtes en lecture (Query). Les Handlers Application l\'utilisent, les Adapters UI l\'implémentent.'
+        },
+        'port-tr': {
+            title: '🔵 PORT - Command',
+            description: 'Interface pour les commandes en écriture (Command). Les Handlers Application l\'utilisent, les Adapters UI l\'implémentent.'
+        },
+        'port-br': {
+            title: '🔵 PORT - Repository',
+            description: 'Interface pour la persistance des données. Les Handlers Application l\'utilisent, les Repositories Doctrine l\'implémentent.'
+        },
+        'port-bottom': {
+            title: '🔵 PORT - Service',
+            description: 'Interface pour les services métier. Définie dans Domain, implémentée dans Infrastructure.'
+        },
+        'port-bl': {
+            title: '🔵 PORT - Event',
+            description: 'Interface pour la gestion des événements. Les Handlers Application l\'utilisent, les Event Dispatchers l\'implémentent.'
+        },
+        'port-tl': {
+            title: '🔵 PORT - API',
+            description: 'Interface pour les APIs externes. Application l\'utilise, HTTP Clients l\'implémentent.'
+        },
+        'ui-adapter': {
+            title: '🟠 UI ADAPTER - Controllers',
+            description: 'Adapter Primaire (driving). Les Controllers Web reçoivent les requêtes HTTP et dispatchent des Commands/Queries vers Application.'
+        },
+        'form-adapter': {
+            title: '🟠 UI ADAPTER - Forms',
+            description: 'Adapter Primaire (driving). Les Forms Symfony valident les données utilisateur et créent des Commands/Queries.'
+        },
+        'cli-adapter': {
+            title: '🟠 UI ADAPTER - CLI',
+            description: 'Adapter Primaire (driving). Les commandes console permettent d\'interagir avec l\'application via terminal.'
+        },
+        'infra-adapter': {
+            title: '🟢 INFRASTRUCTURE - Doctrine',
+            description: 'Adapter Secondaire (driven). Les Repositories Doctrine implémentent les Ports de persistance et manipulent les Entités.'
+        },
+        'persistence-adapter': {
+            title: '🟢 INFRASTRUCTURE - ORM',
+            description: 'Adapter Secondaire (driven). Les mappings ORM (XML) configurent la persistance des Entités Domain.'
+        },
+        'external-adapter': {
+            title: '🟢 INFRASTRUCTURE - External API',
+            description: 'Adapter Secondaire (driven). Les clients HTTP implémentent les Ports d\'API et communiquent avec des systèmes externes.'
+        }
+    };
+
+    if (infos[element]) {
+        title.textContent = infos[element].title;
+        description.textContent = infos[element].description;
+    }
+}
+</script>
