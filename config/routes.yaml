@@ -3,3 +3,13 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+cadeau_attribution_controllers:
+    resource:
+        path: ../src/Cadeau/Attribution/UI/Http/Web/Controller/
+        namespace: App\Cadeau\Attribution\UI\Http\Web\Controller
+    type: attribute
+cadeau_demande_controllers:
+    resource:
+        path: ../src/Cadeau/Demande/UI/Http/Web/Controller/
+        namespace: App\Cadeau\Demande\UI\Http\Web\Controller
+    type: attribute

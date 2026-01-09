@@ -1,0 +1,220 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de Cadeau{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Demande de Cadeau</h1>
+            <p class="text-lg text-gray-600">Faites votre demande et recevez peut-être le cadeau de vos rêves !</p>
+        </div>
+
+        {# Architecture Flow Diagram #}
+        <div class="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-xl shadow-lg border-2 border-blue-200 p-6 mb-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                🔄 Flux Architecture - Demande de Cadeau
+            </h2>
+            <div class="bg-white rounded-lg p-4 mb-3">
+                <div class="grid grid-cols-1 lg:grid-cols-7 gap-2">
+                    {# Step 1: UI #}
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">UI</span>
+                        </div>
+                        <h3 class="font-bold text-amber-800 text-xs mb-1">DemandeCadeauForm<br>Controller</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-amber-700 text-[9px]">dispatch(Command)</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-gray-400">→</div>
+                        <div class="text-[8px] font-bold text-blue-600 bg-blue-50 px-1 rounded">dépend</div>
+                    </div>
+
+                    {# Step 2: Application #}
+                    <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 border-2 border-cyan-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-cyan-500 text-white text-xs font-bold px-2 py-1 rounded-full">APP</span>
+                        </div>
+                        <h3 class="font-bold text-cyan-800 text-xs mb-1">SoumettreDemande<br>CommandHandler</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-cyan-700 text-[9px]">use Port</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-gray-400">→</div>
+                        <div class="text-[8px] font-bold text-blue-600 bg-blue-50 px-1 rounded">utilise</div>
+                    </div>
+
+                    {# Step 3: Domain Port #}
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">PORT</span>
+                        </div>
+                        <h3 class="font-bold text-blue-800 text-xs mb-1">DemandeCadeau<br>RepositoryInterface</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-blue-700 text-[9px]">save()</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-green-500">←</div>
+                        <div class="text-[8px] font-bold text-green-700 bg-green-50 px-1 rounded">implémente</div>
+                    </div>
+
+                    {# Step 4: Infrastructure #}
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">ADAPTER</span>
+                        </div>
+                        <h3 class="font-bold text-green-800 text-xs mb-1">DoctrineDemande<br>CadeauRepository</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-green-700 text-[9px]">Doctrine persist</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded text-xs">
+                <p class="text-gray-700">
+                    <strong>CQRS - Command (Écriture):</strong>
+                    <code class="bg-amber-100 px-1 rounded">DemandeCadeauFormController</code> →
+                    <code class="bg-cyan-100 px-1 rounded">SoumettreDemandeCadeauCommand</code> →
+                    <code class="bg-cyan-100 px-1 rounded">SoumettreDemandeCadeauCommandHandler</code> →
+                    <code class="bg-blue-100 px-1 rounded">DemandeCadeauRepositoryInterface</code> (Port) ←
+                    <code class="bg-green-100 px-1 rounded">DoctrineDemandeCadeauRepository</code> (Adapter)
+                </p>
+                <p class="text-gray-700 mt-2">
+                    <strong>Formulaire:</strong>
+                    <code class="bg-purple-100 px-1 rounded text-[10px]">DemandeCadeauType</code> avec validation Symfony Validator
+                </p>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-6 p-4 rounded-lg {% if type == 'success' %}bg-green-100 border border-green-400 text-green-700{% else %}bg-red-100 border border-red-400 text-red-700{% endif %}">
+                    <div class="flex items-center">
+                        {% if type == 'success' %}
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        {% else %}
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+            <div class="mb-6">
+                <div class="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4 mx-auto">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-semibold text-gray-900 text-center">Remplissez le formulaire</h2>
+                <p class="text-gray-600 text-center mt-2">Tous les champs marqués d'un * sont obligatoires</p>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'data-turbo': 'false'}}) }}
+
+            <div class="space-y-6">
+                <!-- Nom Demandeur -->
+                <div>
+                    {{ form_label(form.nomDemandeur, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(form.nomDemandeur, {'attr': {'class': form.nomDemandeur.vars.errors|length > 0 ? 'w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent' : 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <div class="mt-1">
+                        {{ form_errors(form.nomDemandeur) }}
+                    </div>
+                </div>
+
+                <!-- Email Demandeur -->
+                <div>
+                    {{ form_label(form.emailDemandeur, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(form.emailDemandeur, {'attr': {'class': form.emailDemandeur.vars.errors|length > 0 ? 'w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent' : 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <div class="mt-1">
+                        {{ form_errors(form.emailDemandeur) }}
+                    </div>
+                </div>
+
+                <!-- Téléphone Demandeur -->
+                <div>
+                    {{ form_label(form.telephoneDemandeur, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(form.telephoneDemandeur, {'attr': {'class': form.telephoneDemandeur.vars.errors|length > 0 ? 'w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent' : 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <div class="mt-1">
+                        {{ form_errors(form.telephoneDemandeur) }}
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Optionnel - Pour vous contacter rapidement</p>
+                </div>
+
+                <!-- Cadeau Souhaité -->
+                <div>
+                    {{ form_label(form.cadeauSouhaite, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(form.cadeauSouhaite, {'attr': {'class': form.cadeauSouhaite.vars.errors|length > 0 ? 'w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent' : 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <div class="mt-1">
+                        {{ form_errors(form.cadeauSouhaite) }}
+                    </div>
+                </div>
+
+                <!-- Motivation -->
+                <div>
+                    {{ form_label(form.motivation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-2'}}) }}
+                    {{ form_widget(form.motivation, {'attr': {'class': form.motivation.vars.errors|length > 0 ? 'w-full px-4 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent' : 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'}}) }}
+                    <div class="mt-1">
+                        {{ form_errors(form.motivation) }}
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Minimum 10 caractères - Soyez convaincant !</p>
+                </div>
+
+                <!-- Informations supplémentaires -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 class="font-medium text-blue-900 mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        Informations importantes
+                    </h3>
+                    <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                        <li>Votre demande sera examinée par notre équipe</li>
+                        <li>Vous recevrez une réponse sous 5-7 jours ouvrables</li>
+                        <li>Les demandes sont traitées par ordre d'arrivée</li>
+                        <li>Une motivation convaincante augmente vos chances</li>
+                    </ul>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    {{ form_widget(form.save) }}
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+        <!-- Bottom Info -->
+        <div class="mt-8 text-center text-sm text-gray-600">
+            <p>
+                En soumettant ce formulaire, vous acceptez que vos données soient traitées dans le cadre de votre demande.
+            </p>
+            <p class="mt-2">
+                <a href="{{ path('app.home') }}" class="text-blue-600 hover:text-blue-700 underline">
+                    Retour à l'accueil
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

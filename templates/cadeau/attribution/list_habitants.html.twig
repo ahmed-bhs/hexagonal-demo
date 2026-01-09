@@ -1,0 +1,336 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Habitants{% endblock %}
+
+{% block body %}
+<div class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {# Header #}
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <svg class="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        Liste des Habitants
+                    </h1>
+                    <p class="mt-2 text-gray-600">
+                        Gérez tous les habitants enregistrés dans le système
+                    </p>
+                </div>
+                <a href="{{ path('app.cadeau.attribution.list_cadeaux') }}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                    </svg>
+                    Voir les cadeaux
+                </a>
+            </div>
+        </div>
+
+        {# Architecture Flow Diagram #}
+        <div class="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-xl shadow-lg border-2 border-blue-200 p-6 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                🔄 Flux Architecture - Liste des Habitants
+            </h2>
+            <div class="bg-white rounded-lg p-4 mb-3">
+                <div class="grid grid-cols-1 lg:grid-cols-7 gap-2">
+                    {# Step 1: UI #}
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 border-2 border-amber-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">UI</span>
+                        </div>
+                        <h3 class="font-bold text-amber-800 text-xs mb-1">ListHabitants<br>Controller</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-amber-700">dispatch(Query)</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-gray-400">→</div>
+                        <div class="text-[8px] font-bold text-blue-600 bg-blue-50 px-1 rounded">dépend</div>
+                    </div>
+
+                    {# Step 2: Application #}
+                    <div class="bg-gradient-to-br from-cyan-50 to-cyan-100 border-2 border-cyan-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-cyan-500 text-white text-xs font-bold px-2 py-1 rounded-full">APP</span>
+                        </div>
+                        <h3 class="font-bold text-cyan-800 text-xs mb-1">RecupererHabitants<br>QueryHandler</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-cyan-700 text-[9px]">use Port</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-gray-400">→</div>
+                        <div class="text-[8px] font-bold text-blue-600 bg-blue-50 px-1 rounded">utilise</div>
+                    </div>
+
+                    {# Step 3: Domain Port #}
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">PORT</span>
+                        </div>
+                        <h3 class="font-bold text-blue-800 text-xs mb-1">HabitantRepository<br>Interface</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-blue-700 text-[9px]">searchPaginated()</code>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="text-xl text-green-500">←</div>
+                        <div class="text-[8px] font-bold text-green-700 bg-green-50 px-1 rounded">implémente</div>
+                    </div>
+
+                    {# Step 4: Infrastructure #}
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-lg p-3">
+                        <div class="text-center mb-1">
+                            <span class="inline-block bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">ADAPTER</span>
+                        </div>
+                        <h3 class="font-bold text-green-800 text-xs mb-1">DoctrineHabitant<br>Repository</h3>
+                        <div class="bg-white rounded p-1 text-[10px] font-mono">
+                            <code class="text-green-700 text-[9px]">Doctrine+Paginator</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded text-xs">
+                <p class="text-gray-700">
+                    <strong>Classes impliquées:</strong>
+                    <code class="bg-amber-100 px-1 rounded">ListHabitantsController</code> →
+                    <code class="bg-cyan-100 px-1 rounded">RecupererHabitantsQuery</code> →
+                    <code class="bg-cyan-100 px-1 rounded">RecupererHabitantsQueryHandler</code> →
+                    <code class="bg-blue-100 px-1 rounded">HabitantRepositoryInterface</code> (Port) ←
+                    <code class="bg-green-100 px-1 rounded">DoctrineHabitantRepository</code> (Adapter)
+                </p>
+                <p class="text-gray-700 mt-2">
+                    <strong>ValueObjects utilisés:</strong>
+                    <code class="bg-purple-100 px-1 rounded text-[10px]">SearchTerm</code>,
+                    <code class="bg-purple-100 px-1 rounded text-[10px]">Page</code>,
+                    <code class="bg-purple-100 px-1 rounded text-[10px]">PerPage</code>,
+                    <code class="bg-purple-100 px-1 rounded text-[10px]">PaginatedResult</code>
+                </p>
+            </div>
+        </div>
+
+        {# Error Messages #}
+        {% if errors is defined and errors|length > 0 %}
+        <div class="mb-6">
+            <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">
+                            Erreur{{ errors|length > 1 ? 's' : '' }} de validation
+                        </h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for error in errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {# Search Form #}
+        <div class="mb-6">
+            <form method="get" action="{{ path('app.cadeau.attribution.list_habitants') }}" class="flex gap-4">
+                <div class="flex-1">
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ searchTerm }}"
+                        placeholder="Rechercher par nom, prénom ou email..."
+                        class="w-full px-4 py-2 border {{ errors is defined and errors|length > 0 ? 'border-red-300' : 'border-gray-300' }} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                </div>
+                <button
+                    type="submit"
+                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Rechercher
+                </button>
+                {% if searchTerm %}
+                <a
+                    href="{{ path('app.cadeau.attribution.list_habitants') }}"
+                    class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                    Effacer
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        {# Results Info #}
+        {% if response %}
+        <div class="mb-4 text-sm text-gray-600">
+            Affichage de {{ response.habitants|length }} sur {{ response.total }} résultat(s)
+            {% if searchTerm %}
+            pour "{{ searchTerm }}"
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if not response or response.habitants is empty %}
+            {# Empty State #}
+            {% if errors is not defined or errors|length == 0 %}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun habitant trouvé</h3>
+                <p class="text-gray-500">
+                    {% if searchTerm %}
+                    Essayez d'ajuster vos critères de recherche.
+                    {% else %}
+                    Aucun habitant n'a été ajouté pour le moment.
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+        {% else %}
+            {# Table #}
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nom Complet
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Âge
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Email
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Statut
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for habitant in response.habitants %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-semibold text-gray-900">{{ habitant.nomComplet }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ habitant.age.value }} ans
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <a href="mailto:{{ habitant.email.value }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                            {{ habitant.email.value }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if habitant.isEnfant %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                Enfant
+                                            </span>
+                                        {% elseif habitant.isSenior %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                                Senior
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Adulte
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Pagination Controls #}
+            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg shadow-sm">
+                <div class="flex flex-1 justify-between sm:hidden">
+                    {% if response.hasPreviousPage %}
+                    <a href="{{ path('app.cadeau.attribution.list_habitants', {page: response.currentPage - 1, per_page: response.perPage, search: searchTerm}) }}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Précédent
+                    </a>
+                    {% else %}
+                    <span class="relative inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                        Précédent
+                    </span>
+                    {% endif %}
+                    {% if response.hasNextPage %}
+                    <a href="{{ path('app.cadeau.attribution.list_habitants', {page: response.currentPage + 1, per_page: response.perPage, search: searchTerm}) }}" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Suivant
+                    </a>
+                    {% else %}
+                    <span class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                        Suivant
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Page <span class="font-medium">{{ response.currentPage }}</span> sur <span class="font-medium">{{ response.totalPages }}</span> ({{ response.total }} résultat(s) au total)
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                            {% if response.hasPreviousPage %}
+                            <a href="{{ path('app.cadeau.attribution.list_habitants', {page: response.currentPage - 1, per_page: response.perPage, search: searchTerm}) }}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Précédent</span>
+                                ←
+                            </a>
+                            {% else %}
+                            <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed">
+                                ←
+                            </span>
+                            {% endif %}
+
+                            {% for pageNum in 1..response.totalPages %}
+                                {% if pageNum == response.currentPage %}
+                                <span class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                                    {{ pageNum }}
+                                </span>
+                                {% elseif pageNum == 1 or pageNum == response.totalPages or (pageNum >= response.currentPage - 2 and pageNum <= response.currentPage + 2) %}
+                                <a href="{{ path('app.cadeau.attribution.list_habitants', {page: pageNum, per_page: response.perPage, search: searchTerm}) }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                    {{ pageNum }}
+                                </a>
+                                {% elseif pageNum == response.currentPage - 3 or pageNum == response.currentPage + 3 %}
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">
+                                    ...
+                                </span>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if response.hasNextPage %}
+                            <a href="{{ path('app.cadeau.attribution.list_habitants', {page: response.currentPage + 1, per_page: response.perPage, search: searchTerm}) }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Suivant</span>
+                                →
+                            </a>
+                            {% else %}
+                            <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed">
+                                →
+                            </span>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

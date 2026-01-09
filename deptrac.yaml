@@ -1,0 +1,93 @@
+deptrac:
+  paths:
+    - ./src
+  exclude_files:
+    - '#.*test.*#i'
+
+  layers:
+    # 1. Domain Layer - Le coeur métier pur (aucune dépendance externe)
+    - name: Domain
+      collectors:
+        - type: classLike
+          value: App\\Cadeau\\.*\\Domain\\.*
+
+    # 2. Application Layer - Cas d'usage (CQRS: Commands & Queries)
+    - name: Application
+      collectors:
+        - type: classLike
+          value: App\\Cadeau\\.*\\Application\\.*
+
+    # 3. Infrastructure Layer - Adaptateurs techniques (Doctrine, etc.)
+    - name: Infrastructure
+      collectors:
+        - type: classLike
+          value: App\\Cadeau\\.*\\Infrastructure\\.*
+
+    # 4. UI Layer - Présentation (Controllers, Forms, etc.)
+    - name: UI
+      collectors:
+        - type: classLike
+          value: App\\Cadeau\\.*\\UI\\.*
+
+    # 5. Symfony Framework (Controllers globaux, DataFixtures, etc.)
+    - name: Symfony
+      collectors:
+        - type: classLike
+          value: App\\Controller\\.*
+        - type: classLike
+          value: App\\DataFixtures\\.*
+        - type: classLike
+          value: App\\Kernel
+
+  ruleset:
+    # ================================================================================
+    # ARCHITECTURE HEXAGONALE - RÈGLES DE DÉPENDANCES
+    # IMPORTANT : Dans Deptrac, on liste les dépendances AUTORISÉES
+    # Si une couche n'est pas listée = elle est INTERDITE
+    # ================================================================================
+
+    # Domain Layer - ✅ Ne dépend de PERSONNE (liste vide = aucune dépendance autorisée)
+    Domain: []
+
+    # Application Layer - ✅ Peut UNIQUEMENT dépendre de Domain
+    Application:
+      - Domain  # Application PEUT dépendre de Domain (Ports, Models, ValueObjects)
+
+    # Infrastructure Layer - ✅ Peut UNIQUEMENT dépendre de Domain
+    Infrastructure:
+      - Domain  # Infrastructure PEUT dépendre de Domain (implémente les Ports, utilise les Models)
+
+    # UI Layer - ✅ Peut dépendre de Application et Symfony
+    # Ne peut PAS dépendre directement de Domain ou Infrastructure
+    UI:
+      - Application  # UI PEUT dépendre d'Application (Commands, Queries, Responses)
+      - Symfony      # UI PEUT utiliser Symfony (Forms, Controllers, etc.)
+
+    # Symfony Layer - ✅ Peut dépendre de Domain, Application, Infrastructure
+    #
+    # JUSTIFICATION : Les DataFixtures sont un cas spécial acceptable
+    # - Ce sont des données de test/seed, pas du code métier
+    # - Elles doivent créer des entités Domain directement
+    # - Alternative : créer des Commands spécifiques → complexité inutile
+    #
+    # IMPORTANT : Les Controllers (HomeController, etc.) respectent CQRS
+    # et passent par Application, ils n'accèdent PAS directement au Domain
+    Symfony:
+      - Domain          # Pour DataFixtures uniquement (données de test)
+      - Application     # Pour Controllers (CQRS)
+      - Infrastructure  # Pour configuration Doctrine, services
+
+  formatters:
+    graphviz:
+      # Génère un graphique visuel des dépendances entre layers
+      groups:
+        Domain:
+          - Domain
+        Application:
+          - Application
+        Infrastructure:
+          - Infrastructure
+        UI:
+          - UI
+        Framework:
+          - Symfony

@@ -1,0 +1,492 @@
+{# Architecture Diagram Component with Cytoscape.js #}
+<div class="architecture-diagram-container bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl border-2 border-blue-200 p-3 sm:p-6 mb-6 sm:mb-8 transition-all duration-300">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3">
+        <h2 class="text-lg sm:text-2xl font-bold text-gray-900 flex items-center">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <span class="text-base sm:text-xl md:text-2xl">{{ title|default('🔄 Flux Architecture Hexagonale') }}</span>
+        </h2>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <button onclick="resetDiagram()" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all duration-200 font-medium shadow-sm hover:shadow-md" aria-label="Réinitialiser le diagramme">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span class="hidden sm:inline">Reset</span>
+            </button>
+            <button onclick="fitDiagram()" class="flex-1 sm:flex-none inline-flex items-center justify-center px-3 sm:px-4 py-2 text-xs sm:text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-all duration-200 font-medium shadow-sm hover:shadow-md" aria-label="Centrer le diagramme">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                </svg>
+                <span class="hidden sm:inline">Centrer</span>
+            </button>
+        </div>
+    </div>
+
+    {# Légende #}
+    <div class="mb-3 sm:mb-4 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg border border-gray-200">
+        <div class="flex flex-wrap gap-2 sm:gap-3 text-xs">
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-500 mr-1.5 flex-shrink-0"></div>
+                <span class="font-medium text-gray-700">Domain/Ports</span>
+            </div>
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-cyan-500 mr-1.5 flex-shrink-0"></div>
+                <span class="font-medium text-gray-700">Application</span>
+            </div>
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500 mr-1.5 flex-shrink-0"></div>
+                <span class="font-medium text-gray-700">Infrastructure</span>
+            </div>
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-amber-500 mr-1.5 flex-shrink-0"></div>
+                <span class="font-medium text-gray-700">UI</span>
+            </div>
+            <div class="hidden sm:block w-px bg-gray-300"></div>
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-4 h-0 border-2 border-blue-600 mr-1.5 flex-shrink-0"></div>
+                <span class="text-gray-700">Dépend</span>
+            </div>
+            <div class="flex items-center bg-white px-2 py-1 rounded-md shadow-sm">
+                <div class="w-4 h-0 border-2 border-green-600 border-dashed mr-1.5 flex-shrink-0" style="border-width: 3px;"></div>
+                <span class="text-gray-700">Implémente</span>
+            </div>
+        </div>
+    </div>
+
+    {# Canvas Cytoscape #}
+    <div id="cy" class="w-full border-2 border-gray-200 rounded-lg sm:rounded-xl shadow-inner" style="height: 400px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);" role="img" aria-label="Diagramme interactif de l'architecture hexagonale"></div>
+    <p class="text-xs text-gray-500 mt-2 text-center sm:hidden">👆 Touchez les éléments pour plus d'infos</p>
+
+    {# Info panel #}
+    <div id="node-info" class="mt-3 sm:mt-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg shadow-md hidden animate-fadeInUp" role="alert" aria-live="polite">
+        <h3 class="font-bold text-blue-900 mb-2 text-sm sm:text-base" id="node-title"></h3>
+        <p class="text-xs sm:text-sm text-blue-800" id="node-description"></p>
+        <div class="mt-2 text-xs text-blue-700 bg-white/50 p-2 rounded" id="node-dependencies"></div>
+    </div>
+</div>
+
+{# Cytoscape.js Library #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+
+<script>
+let cy;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Detect screen size for responsive adjustments
+    const isMobile = window.innerWidth < 640;
+    const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
+
+    cy = cytoscape({
+        container: document.getElementById('cy'),
+
+        elements: [
+            // ============ NODES ============
+            // Domain Layer - Center
+            { data: {
+                id: 'domain',
+                label: 'DOMAIN\n(Cœur)',
+                layer: 'domain',
+                description: 'Entités, ValueObjects',
+                info: 'Ne dépend de PERSONNE - Logique métier pure'
+            }},
+
+            // Domain Ports (Interfaces)
+            { data: {
+                id: 'ports',
+                label: 'PORTS\n(Interfaces)',
+                layer: 'domain',
+                description: 'RepositoryInterface, ServiceInterface',
+                info: 'Interfaces définies dans Domain - Contrat pour Infrastructure'
+            }},
+
+            // Application Layer
+            { data: {
+                id: 'application',
+                label: 'APPLICATION\n(Use Cases)',
+                layer: 'application',
+                description: 'Commands, Queries, Handlers',
+                info: 'Orchestre la logique métier via CQRS'
+            }},
+
+            // Infrastructure Layer
+            { data: {
+                id: 'infrastructure',
+                label: 'INFRASTRUCTURE\n(Adapters)',
+                layer: 'infrastructure',
+                description: 'Repositories Doctrine, Custom Types',
+                info: 'Adaptateurs techniques qui implémentent les Ports'
+            }},
+
+            // UI Layer
+            { data: {
+                id: 'ui',
+                label: 'UI\n(Présentation)',
+                layer: 'ui',
+                description: 'Controllers, Forms, Templates',
+                info: 'Interface utilisateur (Web)'
+            }},
+
+            // Symfony Framework
+            { data: {
+                id: 'symfony',
+                label: 'SYMFONY\n(Framework)',
+                layer: 'symfony',
+                description: 'DataFixtures, Controllers globaux',
+                info: 'Framework et outils'
+            }},
+
+            // ============ EDGES (Dépendances) ============
+            // Domain contient les Ports
+            { data: {
+                source: 'domain',
+                target: 'ports',
+                label: 'définit',
+                type: 'contains',
+                description: 'Domain définit les Ports (interfaces)'
+            }},
+
+            // Application → Domain (Entities, VOs)
+            { data: {
+                source: 'application',
+                target: 'domain',
+                label: 'utilise',
+                type: 'depends',
+                description: 'Application utilise Entités et ValueObjects'
+            }},
+
+            // Application → Ports (via DI)
+            { data: {
+                source: 'application',
+                target: 'ports',
+                label: 'dépend',
+                type: 'depends',
+                description: 'Handlers dépendent des interfaces (Ports) - DI injecte les implémentations'
+            }},
+
+            // Infrastructure → Ports (implémente)
+            { data: {
+                source: 'infrastructure',
+                target: 'ports',
+                label: 'implémente',
+                type: 'implements',
+                description: 'Repositories implémentent les interfaces Ports'
+            }},
+
+            // Infrastructure → Domain (utilise models)
+            { data: {
+                source: 'infrastructure',
+                target: 'domain',
+                label: 'manipule',
+                type: 'depends',
+                description: 'Repositories manipulent les Entités Domain'
+            }},
+
+            // UI → Application
+            { data: {
+                source: 'ui',
+                target: 'application',
+                label: 'dispatch',
+                type: 'depends',
+                description: 'UI dispatch des Commands/Queries vers Application'
+            }},
+
+            // Symfony → Application
+            { data: {
+                source: 'symfony',
+                target: 'application',
+                label: 'utilise',
+                type: 'depends',
+                description: 'Controllers utilisent Application (CQRS)'
+            }},
+
+            // Symfony → Domain (DataFixtures only)
+            { data: {
+                source: 'symfony',
+                target: 'domain',
+                label: 'fixtures',
+                type: 'special',
+                description: 'DataFixtures créent des entités Domain (cas spécial test)'
+            }},
+        ],
+
+        style: [
+            // ============ NODE STYLES ============
+            {
+                selector: 'node',
+                style: {
+                    'content': 'data(label)',
+                    'text-valign': 'center',
+                    'text-halign': 'center',
+                    'text-wrap': 'wrap',
+                    'text-max-width': isMobile ? '80px' : '100px',
+                    'font-size': isMobile ? '10px' : (isTablet ? '11px' : '12px'),
+                    'font-weight': 'bold',
+                    'width': isMobile ? '100' : (isTablet ? '120' : '140'),
+                    'height': isMobile ? '100' : (isTablet ? '120' : '140'),
+                    'border-width': 3,
+                    'border-color': '#2563eb',
+                    'background-opacity': 0.9,
+                    'color': '#fff',
+                    'text-outline-color': '#000',
+                    'text-outline-width': 1,
+                    'transition-property': 'background-color, border-color, width, height',
+                    'transition-duration': '0.3s'
+                }
+            },
+
+            // Domain node (blue)
+            {
+                selector: 'node[layer="domain"]',
+                style: {
+                    'background-color': '#3b82f6',
+                    'border-color': '#1d4ed8',
+                }
+            },
+
+            // Application node (cyan)
+            {
+                selector: 'node[layer="application"]',
+                style: {
+                    'background-color': '#06b6d4',
+                    'border-color': '#0891b2',
+                }
+            },
+
+            // Infrastructure node (green)
+            {
+                selector: 'node[layer="infrastructure"]',
+                style: {
+                    'background-color': '#10b981',
+                    'border-color': '#059669',
+                }
+            },
+
+            // UI node (amber)
+            {
+                selector: 'node[layer="ui"]',
+                style: {
+                    'background-color': '#f59e0b',
+                    'border-color': '#d97706',
+                }
+            },
+
+            // Symfony node (purple)
+            {
+                selector: 'node[layer="symfony"]',
+                style: {
+                    'background-color': '#8b5cf6',
+                    'border-color': '#7c3aed',
+                }
+            },
+
+            // Node hover
+            {
+                selector: 'node:active',
+                style: {
+                    'overlay-opacity': 0.2,
+                    'overlay-color': '#3b82f6',
+                    'overlay-padding': 8,
+                    'width': '160',
+                    'height': '160',
+                }
+            },
+
+            // ============ EDGE STYLES ============
+            {
+                selector: 'edge',
+                style: {
+                    'width': isMobile ? 2 : 3,
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle',
+                    'arrow-scale': isMobile ? 1.2 : 1.5,
+                    'label': isMobile ? '' : 'data(label)', // Hide labels on mobile for clarity
+                    'font-size': isMobile ? '8px' : '10px',
+                    'text-rotation': 'autorotate',
+                    'text-margin-y': -10,
+                    'text-background-color': '#fff',
+                    'text-background-opacity': 0.8,
+                    'text-background-padding': '3px',
+                    'color': '#374151',
+                    'transition-property': 'line-color, target-arrow-color, width',
+                    'transition-duration': '0.3s'
+                }
+            },
+
+            // Depends edge (solid blue)
+            {
+                selector: 'edge[type="depends"]',
+                style: {
+                    'line-color': '#2563eb',
+                    'target-arrow-color': '#2563eb',
+                }
+            },
+
+            // Implements edge (dashed green - thick)
+            {
+                selector: 'edge[type="implements"]',
+                style: {
+                    'line-color': '#10b981',
+                    'target-arrow-color': '#10b981',
+                    'line-style': 'dashed',
+                    'width': 4,
+                }
+            },
+
+            // Contains edge (solid gray - Domain ⊃ Ports)
+            {
+                selector: 'edge[type="contains"]',
+                style: {
+                    'line-color': '#6b7280',
+                    'target-arrow-color': '#6b7280',
+                    'line-style': 'solid',
+                    'width': 2,
+                    'target-arrow-shape': 'triangle',
+                }
+            },
+
+            // Special edge (dotted purple - DataFixtures)
+            {
+                selector: 'edge[type="special"]',
+                style: {
+                    'line-color': '#8b5cf6',
+                    'target-arrow-color': '#8b5cf6',
+                    'line-style': 'dotted',
+                    'width': 2,
+                }
+            },
+
+            // Edge hover
+            {
+                selector: 'edge:active',
+                style: {
+                    'width': 5,
+                    'overlay-opacity': 0.2,
+                    'overlay-color': '#3b82f6',
+                }
+            }
+        ],
+
+        layout: {
+            name: 'concentric',
+            concentric: function(node) {
+                // Domain et Ports au centre (niveau 4)
+                if (node.data('id') === 'domain') return 5;
+                if (node.data('id') === 'ports') return 4;
+                // Application et Infrastructure autour (niveau 2-3)
+                if (node.data('layer') === 'application') return 3;
+                if (node.data('layer') === 'infrastructure') return 2;
+                // UI et Symfony en périphérie (niveau 1)
+                return 1;
+            },
+            levelWidth: function(nodes) {
+                return 2;
+            },
+            minNodeSpacing: isMobile ? 80 : (isTablet ? 100 : 120),
+            animate: true,
+            animationDuration: 1000,
+            animationEasing: 'ease-out-cubic',
+            spacingFactor: isMobile ? 1.2 : 1.5
+        },
+
+        // Interactions - Optimized for touch devices
+        minZoom: 0.4,
+        maxZoom: 2.5,
+        wheelSensitivity: 0.2,
+        touchTapThreshold: 8,
+        userZoomingEnabled: true,
+        userPanningEnabled: true,
+        boxSelectionEnabled: false
+    });
+
+    // ============ EVENT HANDLERS ============
+
+    // Click sur un nœud
+    cy.on('tap', 'node', function(evt) {
+        const node = evt.target;
+        const data = node.data();
+
+        document.getElementById('node-info').classList.remove('hidden');
+        document.getElementById('node-title').textContent = data.label.replace('\\n', ' ');
+        document.getElementById('node-description').textContent = data.description;
+        document.getElementById('node-dependencies').textContent = data.info;
+
+        // Highlight connected edges
+        cy.elements().removeClass('highlighted');
+        node.addClass('highlighted');
+        node.connectedEdges().addClass('highlighted');
+    });
+
+    // Click sur un edge
+    cy.on('tap', 'edge', function(evt) {
+        const edge = evt.target;
+        const data = edge.data();
+
+        document.getElementById('node-info').classList.remove('hidden');
+        document.getElementById('node-title').textContent = `${data.source} → ${data.target}`;
+        document.getElementById('node-description').textContent = data.label;
+        document.getElementById('node-dependencies').textContent = data.description;
+    });
+
+    // Click sur le fond
+    cy.on('tap', function(evt) {
+        if (evt.target === cy) {
+            document.getElementById('node-info').classList.add('hidden');
+            cy.elements().removeClass('highlighted');
+        }
+    });
+
+    // Hover effects
+    cy.on('mouseover', 'node', function(evt) {
+        evt.target.style('cursor', 'pointer');
+    });
+});
+
+// ============ HELPER FUNCTIONS ============
+function resetDiagram() {
+    cy.layout({
+        name: 'concentric',
+        concentric: function(node) {
+            if (node.data('id') === 'domain') return 5;
+            if (node.data('id') === 'ports') return 4;
+            if (node.data('layer') === 'application') return 3;
+            if (node.data('layer') === 'infrastructure') return 2;
+            return 1;
+        },
+        levelWidth: function() { return 2; },
+        minNodeSpacing: 120,
+        animate: true,
+        animationDuration: 1000,
+        spacingFactor: 1.5
+    }).run();
+    cy.fit(50);
+}
+
+function fitDiagram() {
+    cy.fit(50);
+}
+</script>
+
+<style>
+#cy {
+    cursor: grab;
+}
+
+#cy:active {
+    cursor: grabbing;
+}
+
+.highlighted {
+    opacity: 1 !important;
+}
+
+node:not(.highlighted) {
+    opacity: 0.3;
+}
+
+edge:not(.highlighted) {
+    opacity: 0.3;
+}
+</style>
