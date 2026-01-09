@@ -1,0 +1,245 @@
+site_name: Hexagonal Demo
+site_description: Live demo of Hexagonal Architecture with Symfony. Gift management system built with hexagonal-maker-bundle showcasing CQRS, DDD, and Ports & Adapters patterns.
+site_author: Ahmed EBEN HASSINE
+site_url: https://ahmed-bhs.github.io/hexagonal-demo/
+
+# SEO and Social
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ahmed-bhs
+      name: Ahmed EBEN HASSINE on GitHub
+    - icon: fontawesome/solid/mug-hot
+      link: https://www.buymeacoffee.com/w6ZhBSGX2
+      name: Buy Me a Coffee
+
+  generator: false
+
+  # SEO Tags - Complete
+  meta:
+    # Primary Meta Tags
+    - name: title
+      content: Hexagonal Demo - Live Symfony Application with Hexagonal Architecture
+    - name: description
+      content: Working demo of hexagonal architecture, CQRS, and DDD patterns with Symfony. 95% code auto-generated with hexagonal-maker-bundle. Gift management system.
+    - name: keywords
+      content: hexagonal architecture demo, symfony demo, cqrs example, ddd example, ports and adapters, clean architecture demo, symfony application, hexagonal maker bundle, gift management, live demo
+    - name: author
+      content: Ahmed EBEN HASSINE
+    - name: robots
+      content: index, follow
+    - name: language
+      content: English
+    - name: revisit-after
+      content: 7 days
+
+    # Open Graph / Facebook
+    - property: og:type
+      content: website
+    - property: og:site_name
+      content: Hexagonal Demo
+    - property: og:title
+      content: Hexagonal Demo - Live Symfony Hexagonal Architecture Application
+    - property: og:description
+      content: Working demo showcasing hexagonal architecture with Symfony. 95% auto-generated code. CQRS, DDD, Ports & Adapters.
+    - property: og:image
+      content: https://ahmed-bhs.github.io/hexagonal-demo/images/demo-screenshot.png
+    - property: og:image:alt
+      content: Hexagonal Demo Application Screenshot
+    - property: og:url
+      content: https://ahmed-bhs.github.io/hexagonal-demo/
+    - property: og:locale
+      content: en_US
+
+    # Twitter Card
+    - name: twitter:card
+      content: summary_large_image
+    - name: twitter:title
+      content: Hexagonal Demo - Live Symfony Hexagonal Architecture
+    - name: twitter:description
+      content: Working demo of hexagonal architecture with Symfony. 95% auto-generated. CQRS, DDD patterns.
+    - name: twitter:image
+      content: https://ahmed-bhs.github.io/hexagonal-demo/images/demo-screenshot.png
+    - name: twitter:creator
+      content: "@ahmed_bhs"
+    - name: twitter:site
+      content: "@ahmed_bhs"
+
+    # Additional SEO
+    - name: rating
+      content: General
+    - name: distribution
+      content: Global
+    - name: coverage
+      content: Worldwide
+    - name: target
+      content: developers, php developers, symfony developers, software architects, students
+    - name: HandheldFriendly
+      content: "True"
+    - name: MobileOptimized
+      content: "375"
+    - name: apple-mobile-web-app-capable
+      content: "yes"
+    - name: apple-mobile-web-app-status-bar-style
+      content: black-translucent
+
+    # Theme Color for Mobile
+    - name: theme-color
+      content: "#7C3AED"
+    - name: msapplication-TileColor
+      content: "#7C3AED"
+    - name: msapplication-navbutton-color
+      content: "#7C3AED"
+
+    # Structured Data
+    - name: category
+      content: Software Development Demo
+
+repo_name: ahmed-bhs/hexagonal-demo
+repo_url: https://github.com/ahmed-bhs/hexagonal-demo
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode - Demo theme (Purple/Pink)
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode - Demo theme
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.tabs.link
+    - toc.follow
+
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+
+  # No logo for demo, will use text
+  favicon: images/favicon.png
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Plugins
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\-\.]+'
+  - minify:
+      minify_html: true
+
+# Extra CSS
+extra_css:
+  - stylesheets/extra.css
+
+# Extra JavaScript
+extra_javascript:
+  - javascripts/extra.js
+
+# Copyright
+copyright: >
+  Copyright &copy; 2024-2026 Ahmed EBEN HASSINE -
+  <a href="https://github.com/ahmed-bhs/hexagonal-demo/blob/main/LICENSE">MIT License</a>
+
+# Navigation structure
+nav:
+  - Home: index.md
+
+  - Getting Started:
+      - Quick Start: getting-started/quick-start.md
+      - Installation: getting-started/installation.md
+      - First Run: getting-started/first-run.md
+
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Domain Layer: architecture/domain.md
+      - Application Layer: architecture/application.md
+      - Infrastructure Layer: architecture/infrastructure.md
+      - UI Layer: architecture/ui.md
+
+  - Features:
+      - Residents Management: features/residents.md
+      - Gifts Catalog: features/gifts.md
+      - Gift Attribution: features/attribution.md
+
+  - Code Examples:
+      - Entities: examples/entities.md
+      - Value Objects: examples/value-objects.md
+      - Commands & Queries: examples/cqrs.md
+      - Repositories: examples/repositories.md
+
+  - Guides:
+      - Running the App: guides/running.md
+      - Testing: guides/testing.md
+      - Extending: guides/extending.md
+
+  - About:
+      - Code Statistics: about/statistics.md
+      - Changelog: about/changelog.md
+      - License: about/license.md
