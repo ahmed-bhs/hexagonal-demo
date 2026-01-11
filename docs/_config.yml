@@ -8,8 +8,7 @@ url: "https://ahmed-bhs.github.io"
 repository: ahmed-bhs/hexagonal-demo
 
 # Theme
-theme: just-the-docs
-remote_theme: just-the-docs/just-the-docs
+remote_theme: just-the-docs/just-the-docs@v0.8.2
 
 # Color scheme
 color_scheme: nil
