@@ -1,218 +1,214 @@
-# 🎁 Hexagonal Demo
+---
+layout: default
+title: Home
+nav_order: 1
+description: "Hexagonal Demo - A complete Symfony application demonstrating hexagonal architecture, CQRS, and DDD patterns with 95% auto-generated code."
+permalink: /
+---
 
-<p align="center">
-  <strong>Live Demo of Hexagonal Architecture with Symfony</strong>
-</p>
+# Hexagonal Demo
+{: .fs-9 }
 
-<p align="center">
-  <a href="https://github.com/ahmed-bhs/hexagonal-demo"><img src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github" alt="GitHub"></a>
-  <a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.1+-777BB4?logo=php" alt="PHP 8.1+"></a>
-  <a href="https://symfony.com"><img src="https://img.shields.io/badge/Symfony-6.4%2B-000000?logo=symfony" alt="Symfony"></a>
-  <a href="https://github.com/ahmed-bhs/hexagonal-demo/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
-</p>
+A complete Symfony application demonstrating hexagonal architecture in action with 95% auto-generated code.
+{: .fs-6 .fw-300 }
 
-<p align="center">
-  🎯 <strong>95% Auto-Generated</strong> | 💎 <strong>Pure Domain</strong> | 🎮 <strong>Working Demo</strong> | 📚 <strong>Educational</strong>
-</p>
+[Get Started](quick-start){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[View on GitHub](https://github.com/ahmed-bhs/hexagonal-demo){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
 ## What is This?
 
-A **complete, working Symfony application** demonstrating hexagonal architecture in action:
+**Hexagonal Demo** is a fully functional gift management system built with Symfony that showcases:
 
-- **Gift Management System** - Residents, Gifts, and Attributions
-- **95% Code Auto-Generated** with [hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle)
-- **Pure Hexagonal Architecture** - Domain, Application, Infrastructure, UI layers
-- **CQRS Pattern** - Commands and Queries properly separated
-- **DDD Patterns** - Entities, Value Objects, Aggregates, Repositories
+- **Hexagonal Architecture** (Ports & Adapters)
+- **Domain-Driven Design** (DDD) patterns
+- **CQRS** (Command Query Responsibility Segregation)
+- **95% Code Auto-Generation** using [hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle)
 
----
-
-## ⚡ Quick Demo
-
-### What You'll See
-
-=== "Dashboard"
-
-    **Home Page**: Statistics and overview
-
-    - Total residents count
-    - Total gifts available
-    - Attributions made
-    - Age distribution chart
-
-=== "Residents"
-
-    **Residents List**: `/habitants`
-
-    - All residents with details
-    - Categories: Child / Adult / Senior
-    - Email validation
-    - Age with category badges
-
-=== "Gifts"
-
-    **Gifts Catalog**: `/cadeaux`
-
-    - Available gifts
-    - Stock status (available/out of stock)
-    - Gift descriptions
-    - Bootstrap design
+{: .note }
+This is a live, working application - not just code snippets. You can clone it, run it, and see hexagonal architecture in action within minutes.
 
 ---
 
-## 🏗️ Architecture
+## Why This Demo?
 
-### Hexagonal Structure
+Most architecture tutorials show you the theory. This demo shows you a **complete, production-ready application** that:
+
+- ✅ Actually runs and works
+- ✅ Follows best practices
+- ✅ Includes database integration
+- ✅ Has a web interface
+- ✅ Demonstrates real use cases
+- ✅ Shows the power of code generation
+
+---
+
+## What You'll Find
+
+### Three Domain Modules
+
+1. **Habitants (Residents)** - Manage residents with age and email validation
+2. **Cadeaux (Gifts)** - Gift catalog with stock management
+3. **Attribution** - Gift assignment to residents
+
+### Complete Hexagonal Structure
 
 ```
 src/Cadeau/Attribution/
 │
-├── Domain/                    💎 PURE BUSINESS LOGIC
-│   ├── Model/
-│   │   ├── Habitant.php       ← Resident entity
-│   │   ├── Cadeau.php         ← Gift entity
-│   │   └── Attribution.php    ← Attribution aggregate
-│   ├── ValueObject/
-│   │   ├── HabitantId.php     ← UUID
-│   │   ├── Age.php            ← Age with validation
-│   │   └── Email.php          ← Email with validation
-│   └── Port/
-│       └── *RepositoryInterface.php  ← Interfaces
+├── Domain/              💎 Pure business logic (no framework)
+│   ├── Model/          Entities: Habitant, Cadeau, Attribution
+│   ├── ValueObject/    Age, Email, HabitantId with validation
+│   └── Port/           Repository interfaces
 │
-├── Application/               ⚙️ USE CASES (CQRS)
-│   ├── AttribuerCadeaux/      ← Command
-│   └── RecupererHabitants/    ← Query
+├── Application/         ⚙️  Use cases (CQRS)
+│   ├── Commands/       AttribuerCadeaux
+│   └── Queries/        RecupererHabitants, RecupererCadeaux
 │
-├── Infrastructure/            🔌 ADAPTERS
-│   └── Persistence/Doctrine/
-│       └── Doctrine*Repository.php
+├── Infrastructure/      🔌 Adapters
+│   └── Doctrine/       Repository implementations
 │
-└── UI/                        🎮 PRIMARY ADAPTERS
-    └── Http/Web/Controller/
+└── UI/                  🎮 Controllers
+    └── Web/            Web controllers
 ```
 
-[See detailed architecture →](architecture/overview.md)
+---
+
+## Key Features
+
+### Auto-Generated Code
+
+- **Entities** with factory methods and business logic
+- **Value Objects** with validation (Age, Email, UUID)
+- **Repository interfaces** with common methods
+- **Doctrine adapters** with optimized queries
+- **Command/Query handlers** with dependency injection
+- **Doctrine mappings** (XML) for persistence
+
+### Manual Additions
+
+- Web controllers for presentation
+- Twig templates for UI
+- Business-specific logic (stock management)
+- Data fixtures for demo
 
 ---
 
-## 🚀 Run Locally
+## Quick Stats
 
-### Quick Start
+| Category | Auto-Generated | Manual | % Auto |
+|----------|---------------|--------|--------|
+| **Domain Layer** | ~400 lines | ~150 lines | 73% |
+| **Application Layer** | ~200 lines | ~50 lines | 80% |
+| **Infrastructure Layer** | ~250 lines | 0 lines | 100% |
+| **UI Layer** | 0 lines | ~350 lines | 0% |
 
-```bash
-# Clone
-git clone https://github.com/ahmed-bhs/hexagonal-demo
-cd hexagonal-demo
+**Total Core (excluding UI):** 85% auto-generated
 
-# Install
-composer install
-
-# Database
-php bin/console doctrine:database:create
-php bin/console doctrine:schema:create
-php bin/console doctrine:fixtures:load
-
-# Run
-symfony server:start
-```
-
-**Access:** http://localhost:8000
-
-[Full installation guide →](getting-started/installation.md)
+{: .highlight }
+Without the hexagonal-maker-bundle, creating this architecture would take 3-4 hours. With the bundle, it takes about 1 hour (mainly for business logic).
 
 ---
 
-## 📊 Code Statistics
+## Live Demo Features
 
-| Category | Lines Generated | Lines Manual | % Auto |
-|----------|----------------|--------------|--------|
-| **Domain** | ~400 | ~150 | 73% |
-| **Application** | ~200 | ~50 | 80% |
-| **Infrastructure** | ~250 | 0 | 100% |
-| **UI** | 0 | ~350 | 0% |
-| **Total Core** | **~850** | **~550** | **61%** |
+### Web Interface
 
-**Excluding UI/Fixtures:** **85% auto-generated** ✨
+- **Dashboard** (`/`) - Statistics and overview
+- **Residents List** (`/habitants`) - All residents with categories
+- **Gifts Catalog** (`/cadeaux`) - Available gifts with stock status
 
-[See detailed statistics →](about/statistics.md)
+### Database
 
----
+- 10 sample residents (children, adults, seniors)
+- 10 different gifts
+- 7 pre-configured attributions
 
-## 🎓 What You'll Learn
+### CQRS in Action
 
-### Hexagonal Architecture Concepts
-
-1. **Pure Domain** - Zero framework dependencies
-2. **Dependency Inversion** - Domain defines interfaces
-3. **CQRS** - Command/Query separation
-4. **Value Objects** - Encapsulated validation
-5. **Ports & Adapters** - Swappable implementations
-
-### Code Examples
-
-- [**Entities**](examples/entities.md) - Pure domain entities with business logic
-- [**Value Objects**](examples/value-objects.md) - Age, Email, UUID validation
-- [**CQRS**](examples/cqrs.md) - Commands and Queries with handlers
-- [**Repositories**](examples/repositories.md) - Ports and Doctrine adapters
+- Commands for writes (AttribuerCadeaux)
+- Queries for reads (RecupererHabitants, RecupererCadeaux)
+- Symfony Messenger as message bus
 
 ---
 
-## 🛠️ Built With
+## Technology Stack
 
-- **[hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle)** - Code generator
-- **Symfony 6.4** - PHP framework
+- **PHP 8.1+** - Modern PHP features
+- **Symfony 6.4+** - Web framework
 - **Doctrine ORM** - Database abstraction
+- **Symfony Messenger** - CQRS implementation
 - **Bootstrap 5** - UI components
-- **Symfony Messenger** - CQRS bus
+- **hexagonal-maker-bundle** - Code generator
 
 ---
 
-## 📚 Documentation
-
-| Guide | Description |
-|-------|-------------|
-| [**Quick Start**](getting-started/quick-start.md) | Install and run in 5 minutes |
-| [**Architecture Overview**](architecture/overview.md) | Understand the hexagonal structure |
-| [**Domain Layer**](architecture/domain.md) | Pure entities and value objects |
-| [**CQRS Examples**](examples/cqrs.md) | Commands and queries in action |
-| [**Testing Guide**](guides/testing.md) | Run and write tests |
-| [**Extending**](guides/extending.md) | Add new features |
-
----
-
-## 🎯 Use Cases
+## Who Is This For?
 
 This demo is perfect for:
 
-- **Learning** hexagonal architecture
-- **Teaching** DDD and CQRS patterns
-- **Evaluating** hexagonal-maker-bundle
-- **Prototyping** new projects
-- **Job interviews** - showcase architecture skills
+- **Developers** learning hexagonal architecture
+- **Architects** evaluating architectural patterns
+- **Teachers** showing DDD and CQRS in practice
+- **Teams** starting new Symfony projects
+- **Students** understanding clean architecture
+- **Interviewers** assessing architecture knowledge
 
 ---
 
-## 🤝 Contributing
+## What You'll Learn
 
-This is a demo project. To contribute to the maker bundle:
+### Architecture Patterns
 
-→ [hexagonal-maker-bundle repository](https://github.com/ahmed-bhs/hexagonal-maker-bundle)
+1. **Hexagonal Architecture** - Ports & Adapters pattern
+2. **Domain-Driven Design** - Entities, Value Objects, Aggregates
+3. **CQRS** - Separating reads from writes
+4. **Dependency Inversion** - Domain defines interfaces
+5. **Repository Pattern** - Abstracting persistence
+
+### Symfony Skills
+
+- Command/Query handlers with Messenger
+- Doctrine custom types for Value Objects
+- Service configuration and DI
+- Doctrine mappings (XML)
+- Controller best practices
+
+### Code Generation
+
+- How to scaffold hexagonal modules
+- Extending generated code
+- When to generate vs when to write manually
+- Maintaining separation of concerns
 
 ---
 
-## 📄 License
+## Next Steps
 
-MIT License - see [LICENSE](about/license.md)
+<div class="code-example" markdown="1">
 
----
+**Ready to dive in?**
 
-<div align="center" markdown="1">
-
-**Created by [Ahmed EBEN HASSINE](https://github.com/ahmed-bhs)**
-
-[![View on GitHub](https://img.shields.io/badge/View-GitHub-181717?logo=github&style=for-the-badge)](https://github.com/ahmed-bhs/hexagonal-demo)
-[![Try the Bundle](https://img.shields.io/badge/Try-Maker%20Bundle-6366F1?style=for-the-badge)](https://github.com/ahmed-bhs/hexagonal-maker-bundle)
+1. [Quick Start Guide](quick-start) - Get the app running in 5 minutes
+2. [Architecture Overview](architecture) - Understand the structure
+3. [Features Guide](features) - Explore what's implemented
+4. [Code Tour](code-tour) - See generated vs manual code
+5. [API Documentation](api) - Learn the endpoints
 
 </div>
+
+---
+
+## Open Source
+
+This demo is open source under the MIT license.
+
+**Repository:** [ahmed-bhs/hexagonal-demo](https://github.com/ahmed-bhs/hexagonal-demo)
+**Bundle:** [ahmed-bhs/hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle)
+
+---
+
+{: .fs-3 }
+**Created by [Ahmed EBEN HASSINE](https://github.com/ahmed-bhs)**
+*Demonstrating the power of hexagonal architecture with Symfony*

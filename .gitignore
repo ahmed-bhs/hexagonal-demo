@@ -22,3 +22,8 @@ deptrac-graph.png
 .deptrac.cache
 .env.test
 *.backup
+
+# Documentation backups and builds
+docs-mkdocs-backup/
+site/
+.venv/
