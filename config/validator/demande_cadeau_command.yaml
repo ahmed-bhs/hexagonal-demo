@@ -1,0 +1,41 @@
+App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommand:
+    properties:
+        nomDemandeur:
+            - NotBlank:
+                message: 'Le nom du demandeur ne peut pas être vide'
+            - Length:
+                min: 2
+                max: 100
+                minMessage: 'Le nom doit contenir au moins {{ limit }} caractères'
+                maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+
+        emailDemandeur:
+            - NotBlank:
+                message: "L'email ne peut pas être vide"
+            - Email:
+                message: "L'email {{ value }} n'est pas valide"
+
+        telephoneDemandeur:
+            - NotBlank:
+                message: 'Le téléphone ne peut pas être vide'
+            - Regex:
+                pattern: '/^(\+33|0)[1-9](\d{2}){4}$/'
+                message: 'Le téléphone doit être au format français valide'
+
+        cadeauSouhaite:
+            - NotBlank:
+                message: 'Le cadeau souhaité ne peut pas être vide'
+            - Length:
+                min: 3
+                max: 200
+                minMessage: 'Le cadeau souhaité doit contenir au moins {{ limit }} caractères'
+                maxMessage: 'Le cadeau souhaité ne peut pas dépasser {{ limit }} caractères'
+
+        motivation:
+            - NotBlank:
+                message: 'La motivation ne peut pas être vide'
+            - Length:
+                min: 10
+                max: 1000
+                minMessage: 'La motivation doit contenir au moins {{ limit }} caractères'
+                maxMessage: 'La motivation ne peut pas dépasser {{ limit }} caractères'

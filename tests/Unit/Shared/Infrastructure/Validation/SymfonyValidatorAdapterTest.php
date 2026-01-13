@@ -25,8 +25,10 @@ final class SymfonyValidatorAdapterTest extends TestCase
     }
 
     #[Test]
-    public function it_validates_object_with_symfony_constraints(): void
+    public function it_validates_object_with_symfony_constraints_via_attributes(): void
     {
+        // Note: Utilise des attributs pour simplifier le test unitaire.
+        // En production, les contraintes sont en YAML (config/validator).
         $validObject = new class ('test@example.com', 'John Doe') {
             public function __construct(
                 #[Assert\NotBlank]

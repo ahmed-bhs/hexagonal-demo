@@ -5,6 +5,11 @@ framework:
         #auto_mapping:
         #    App\Entity\: []
 
+        # Load validation rules from YAML files (hexagonal approach)
+        mapping:
+            paths:
+                - '%kernel.project_dir%/config/validator'
+
 when@test:
     framework:
         validation:

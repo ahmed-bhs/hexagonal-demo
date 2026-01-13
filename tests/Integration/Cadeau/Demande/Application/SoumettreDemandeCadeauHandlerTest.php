@@ -14,6 +14,7 @@ use App\Tests\Fake\Generator\FakeIdGenerator;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\ValidatorBuilder;
 
 /**
  * Test d'intégration pour SoumettreDemandeCadeauCommandHandler.
@@ -32,8 +33,9 @@ final class SoumettreDemandeCadeauHandlerTest extends TestCase
         $this->repository = new InMemoryDemandeCadeauRepository();
         $this->idGenerator = new FakeIdGenerator();
 
+        // Configure Symfony Validator to load YAML files
         $symfonyValidator = Validation::createValidatorBuilder()
-            ->enableAttributeMapping()
+            ->addYamlMapping(__DIR__ . '/../../../../../config/validator/demande_cadeau_command.yaml')
             ->getValidator();
         $this->validator = new SymfonyValidatorAdapter($symfonyValidator);
 
