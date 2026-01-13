@@ -68,32 +68,44 @@ src/Cadeau/
 ├── Attribution/                    # Bounded Context 1
 │   ├── Domain/
 │   │   ├── Model/                  # Entities
-│   │   │   ├── Habitant.php
+│   │   │   ├── Attribution.php
 │   │   │   ├── Cadeau.php
-│   │   │   └── Attribution.php
-│   │   ├── ValueObject/            # Value Objects
-│   │   │   ├── HabitantId.php
-│   │   │   └── Age.php
-│   │   └── Port/                   # Interfaces
-│   │       ├── HabitantRepositoryInterface.php
-│   │       ├── CadeauRepositoryInterface.php
-│   │       └── AttributionRepositoryInterface.php
+│   │   │   └── Habitant.php
+│   │   ├── Port/                   # Interfaces
+│   │   │   ├── AttributionRepositoryInterface.php
+│   │   │   ├── CadeauRepositoryInterface.php
+│   │   │   └── HabitantRepositoryInterface.php
+│   │   └── ValueObject/            # Value Objects
+│   │       ├── Age.php
+│   │       └── HabitantId.php
 │   ├── Application/                # Use Cases
 │   │   ├── AttribuerCadeaux/
 │   │   │   ├── AttribuerCadeauxCommand.php
 │   │   │   ├── AttribuerCadeauxCommandHandler.php
 │   │   │   └── AttribuerCadeauxCommandValidator.php
-│   │   └── RecupererHabitants/
-│   │       ├── RecupererHabitantsQuery.php
-│   │       └── RecupererHabitantsQueryHandler.php
+│   │   ├── RecupererCadeaux/
+│   │   │   ├── RecupererCadeauxQuery.php
+│   │   │   ├── RecupererCadeauxQueryHandler.php
+│   │   │   └── RecupererCadeauxResponse.php
+│   │   ├── RecupererHabitants/
+│   │   │   ├── RecupererHabitantsQuery.php
+│   │   │   ├── RecupererHabitantsQueryHandler.php
+│   │   │   └── RecupererHabitantsResponse.php
+│   │   └── RecupererStatistiques/
+│   │       ├── RecupererStatistiquesQuery.php
+│   │       ├── RecupererStatistiquesQueryHandler.php
+│   │       └── RecupererStatistiquesResponse.php
 │   ├── Infrastructure/             # Adapters
 │   │   └── Persistence/Doctrine/
-│   │       ├── DoctrineHabitantRepository.php
+│   │       ├── DoctrineAttributionRepository.php
 │   │       ├── DoctrineCadeauRepository.php
-│   │       └── DoctrineAttributionRepository.php
+│   │       ├── DoctrineHabitantRepository.php
+│   │       └── Type/
+│   │           ├── AgeType.php
+│   │           └── HabitantIdType.php
 │   └── UI/Http/Web/Controller/     # Primary Adapters
-│       ├── ListHabitantsController.php
-│       └── ListCadeauxController.php
+│       ├── ListCadeauxController.php
+│       └── ListHabitantsController.php
 │
 ├── Demande/                        # Bounded Context 2
 │   ├── Domain/
@@ -103,18 +115,27 @@ src/Cadeau/
 │   │       └── DemandeCadeauRepositoryInterface.php
 │   ├── Application/
 │   │   └── SoumettreDemandeCadeau/
-│   └── Infrastructure/
+│   │       ├── SoumettreDemandeCadeauCommand.php
+│   │       └── SoumettreDemandeCadeauCommandHandler.php
+│   ├── Infrastructure/
+│   │   └── Persistence/Doctrine/
+│   │       └── DoctrineDemandeCadeauRepository.php
+│   └── UI/Http/Web/
+│       ├── Controller/
+│       │   └── DemandeCadeauFormController.php
+│       └── Form/
+│           └── DemandeCadeauType.php
 │
 └── Shared/                         # Shared Kernel
     ├── Domain/
     │   ├── Port/
     │   │   └── IdGeneratorInterface.php
-    │   ├── ValueObject/
-    │   │   └── Email.php
-    │   └── Validation/
-    │       ├── ValidatorInterface.php
-    │       ├── ValidationError.php
-    │       └── ValidationException.php
+    │   ├── Validation/
+    │   │   ├── ValidationError.php
+    │   │   ├── ValidationException.php
+    │   │   └── ValidatorInterface.php
+    │   └── ValueObject/
+    │       └── Email.php
     ├── Infrastructure/
     │   ├── Generator/
     │   │   └── UuidV7Generator.php
@@ -124,8 +145,13 @@ src/Cadeau/
     │       └── SymfonyValidatorAdapter.php
     ├── Pagination/
     │   └── Domain/ValueObject/
+    │       ├── Page.php
+    │       ├── PaginatedResult.php
+    │       ├── PerPage.php
+    │       └── Total.php
     └── Search/
         └── Domain/ValueObject/
+            └── SearchTerm.php
 ```
 
 ### 2.3 Flux de Données
