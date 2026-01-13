@@ -8,6 +8,8 @@ Application de démonstration de l'architecture hexagonale avec Symfony
 
 **Règle** : Domain ne dépend de rien. Application dépend du Domain. Infrastructure implémente les Ports du Domain.
 
+**Concrètement** : Seule l'Infrastructure dépend de Symfony et Doctrine. Domain et Application sont en PHP pur.
+
 ---
 
 ## Table des Matières
