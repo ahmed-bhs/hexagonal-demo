@@ -37,9 +37,20 @@ services:
     App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface:
         class: App\Cadeau\Demande\Infrastructure\Persistence\Doctrine\DoctrineDemandeCadeauRepository
 
-    # Validation Port (pour AttribuerCadeauxCommand)
+    # Validation Port Implementations
+
+    # Validateur pur PHP (pour AttribuerCadeauxCommand)
     App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator: ~
 
     App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandHandler:
         arguments:
             $validator: '@App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator'
+
+    # Adaptateur Symfony Validator (pour commands avec contraintes Symfony)
+    App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter:
+        arguments:
+            $validator: '@validator'
+
+    App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommandHandler:
+        arguments:
+            $validator: '@App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter'

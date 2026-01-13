@@ -7,6 +7,7 @@ namespace App\Cadeau\Demande\Application\SoumettreDemandeCadeau;
 use App\Cadeau\Demande\Domain\Model\DemandeCadeau;
 use App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface;
 use App\Shared\Domain\Port\IdGeneratorInterface;
+use App\Shared\Domain\Validation\ValidatorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -22,6 +23,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Dependencies (all from Domain layer):
  * - IdGeneratorInterface: Port for generating unique IDs
  * - DemandeCadeauRepositoryInterface: Port for demande cadeau persistence
+ * - ValidatorInterface: Port for validation (uses Symfony Validator via adapter)
  *
  * Benefits of using IdGeneratorInterface:
  * ✅ Application layer has ZERO infrastructure dependencies
@@ -35,11 +37,15 @@ final readonly class SoumettreDemandeCadeauCommandHandler
     public function __construct(
         private IdGeneratorInterface $idGenerator,
         private DemandeCadeauRepositoryInterface $demandeCadeauRepository,
+        private ValidatorInterface $validator,
     ) {
     }
 
     public function __invoke(SoumettreDemandeCadeauCommand $command): void
     {
+        // Validate command (using Symfony Validator via adapter)
+        $this->validator->validateOrFail($command);
+
         $demande = DemandeCadeau::create(
             id: $this->idGenerator->generate(),  // ✅ Uses port instead of direct Symfony Uid
             nomDemandeur: $command->nomDemandeur,
