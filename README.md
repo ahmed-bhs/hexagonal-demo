@@ -1,395 +1,514 @@
-# 🎁 Hexagonal Demo - Gestion des Cadeaux
+# Hexagonal Demo - Gestion des Cadeaux
 
-**Application de démonstration de l'architecture hexagonale avec Symfony**
+Application de démonstration de l'architecture hexagonale avec Symfony
 
-Cette application démontre l'utilisation du [hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle) pour créer rapidement une application Symfony avec une architecture hexagonale propre.
+## Table des Matières
 
----
-
-## 📋 Table des Matières
-
-- [Aperçu](#aperçu)
-- [Fonctionnalités](#fonctionnalités)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Structure du Projet](#structure-du-projet)
-- [Code Généré vs Manuel](#code-généré-vs-manuel)
-- [API & Endpoints](#api--endpoints)
+1. [Introduction](#1-introduction)
+2. [Architecture](#2-architecture)
+3. [Installation](#3-installation)
+4. [Utilisation](#4-utilisation)
+5. [Structure du Projet](#5-structure-du-projet)
+6. [Tests](#6-tests)
+7. [Documentation](#7-documentation)
 
 ---
 
-## 🎯 Aperçu
+## 1. Introduction
 
-Cette application gère un système de distribution de cadeaux aux habitants avec :
-- **Gestion des Habitants** (avec ValueObjects: Age, Email)
-- **Catalogue de Cadeaux** (avec gestion de stock)
-- **Système d'Attribution** (relation Habitant-Cadeau)
+### 1.1 Contexte
 
-**🚀 95% du code a été généré automatiquement** avec le bundle `hexagonal-maker-bundle v2.0`.
+Cette application illustre l'implémentation d'une architecture hexagonale (Ports & Adapters) avec Symfony. Elle utilise le bundle [hexagonal-maker-bundle](https://github.com/ahmed-bhs/hexagonal-maker-bundle) pour générer automatiquement la structure du code.
 
----
+### 1.2 Domaine Métier
 
-## ✨ Fonctionnalités
+Le système gère la distribution de cadeaux aux habitants selon les règles suivantes :
 
-### Implémentées
+- Gestion d'habitants avec leurs caractéristiques (âge, email)
+- Catalogue de cadeaux avec gestion de stock
+- Attribution de cadeaux aux habitants
+- Demandes de cadeaux avec workflow d'approbation
 
-✅ **CQRS Pattern**
-- Commands: `AttribuerCadeauxCommand`
-- Queries: `RecupererHabitantsQuery`
-- Handlers avec validation automatique
+### 1.3 Patterns Appliqués
 
-✅ **Domain-Driven Design**
-- Entities pures (Habitant, Cadeau, Attribution)
-- ValueObjects (Age, Email, HabitantId)
-- Factory methods automatiques
-- Validation métier dans le domain
-
-✅ **Ports & Adapters**
-- Interfaces (Ports) dans le Domain
-- Implementations Doctrine dans Infrastructure
-- Méthodes Repository auto-générées
-
-✅ **Interface Web**
-- Dashboard avec statistiques
-- Liste des habitants
-- Catalogue des cadeaux
-- Design responsive avec Bootstrap
-
-✅ **Data Fixtures**
-- 10 habitants (enfants, adultes, seniors)
-- 10 cadeaux variés
-- 7 attributions pré-configurées
+- **Architecture Hexagonale** : Séparation Domain / Application / Infrastructure
+- **Domain-Driven Design** : Entities, Value Objects, Repositories
+- **CQRS** : Séparation Commands / Queries
+- **Dependency Inversion** : Interfaces (Ports) définies dans le Domain
 
 ---
 
-## 🏗️ Architecture
+## 2. Architecture
 
-### Structure Hexagonale
+### 2.1 Structure Hexagonale
+
+Le projet suit une structure en couches concentriques :
 
 ```
-src/Cadeau/Attribution/
-│
-├── Domain/                        # 💎 CORE BUSINESS (Pure PHP)
-│   ├── Model/
-│   │   ├── Habitant.php          ✅ Factory methods + Business logic
-│   │   ├── Cadeau.php            ✅ Gestion stock automatique
-│   │   └── Attribution.php       ✅ Relation métier
-│   │
-│   ├── ValueObject/
-│   │   ├── HabitantId.php        ✅ UUID validation
-│   │   ├── Age.php               ✅ Validation + helpers (isAdult, isChild, isSenior)
-│   │   └── Email.php             ✅ Validation + helpers
-│   │
-│   └── Port/                      # Interfaces
-│       ├── HabitantRepositoryInterface.php  ✅ 6 méthodes (findAll, findByEmail, etc.)
-│       ├── CadeauRepositoryInterface.php    ✅ 6 méthodes
-│       └── AttributionRepositoryInterface.php
-│
-├── Application/                   # ⚙️ USE CASES
-│   ├── AttribuerCadeaux/
-│   │   ├── AttribuerCadeauxCommand.php
-│   │   └── AttribuerCadeauxCommandHandler.php  ✅ Validation + Logique métier complète
-│   │
-│   └── RecupererHabitants/
-│       ├── RecupererHabitantsQuery.php
-│       ├── RecupererHabitantsQueryHandler.php
-│       └── RecupererHabitantsResponse.php   ✅ Méthode toArray() automatique
-│
-├── Infrastructure/                # 🔌 ADAPTERS
-│   └── Persistence/Doctrine/
-│       ├── DoctrineHabitantRepository.php   ✅ 6 méthodes implémentées
-│       ├── DoctrineCadeauRepository.php     ✅ 6 méthodes implémentées
-│       └── DoctrineAttributionRepository.php
-│
-└── UI/                            # 🎮 PRIMARY ADAPTERS
-    └── Http/Web/Controller/
-        ├── ListHabitantsController.php      ✅ Fonctionnel
-        └── ListCadeauxController.php        ✅ Fonctionnel
+Domain (centre)
+  → Application (use cases)
+    → Infrastructure (adapters)
+      → UI (primary adapters)
 ```
 
-### Flux de Données
+### 2.2 Organisation du Code
 
 ```
-User Request → Controller → Query/Command → Handler → Domain → Repository → Database
-                ↓                                         ↓
-            Response ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ← ←
+src/Cadeau/
+├── Attribution/                    # Bounded Context 1
+│   ├── Domain/
+│   │   ├── Model/                  # Entities
+│   │   │   ├── Habitant.php
+│   │   │   ├── Cadeau.php
+│   │   │   └── Attribution.php
+│   │   ├── ValueObject/            # Value Objects
+│   │   │   ├── HabitantId.php
+│   │   │   ├── Age.php
+│   │   │   └── Email.php
+│   │   └── Port/                   # Interfaces
+│   │       ├── HabitantRepositoryInterface.php
+│   │       ├── CadeauRepositoryInterface.php
+│   │       └── AttributionRepositoryInterface.php
+│   ├── Application/                # Use Cases
+│   │   ├── AttribuerCadeaux/
+│   │   │   ├── AttribuerCadeauxCommand.php
+│   │   │   └── AttribuerCadeauxCommandHandler.php
+│   │   └── RecupererHabitants/
+│   │       ├── RecupererHabitantsQuery.php
+│   │       └── RecupererHabitantsQueryHandler.php
+│   ├── Infrastructure/             # Adapters
+│   │   └── Persistence/Doctrine/
+│   │       ├── DoctrineHabitantRepository.php
+│   │       ├── DoctrineCadeauRepository.php
+│   │       └── DoctrineAttributionRepository.php
+│   └── UI/Http/Web/Controller/     # Primary Adapters
+│       ├── ListHabitantsController.php
+│       └── ListCadeauxController.php
+│
+├── Demande/                        # Bounded Context 2
+│   ├── Domain/
+│   │   ├── Model/
+│   │   │   └── DemandeCadeau.php
+│   │   └── Port/
+│   │       └── DemandeCadeauRepositoryInterface.php
+│   ├── Application/
+│   │   └── SoumettreDemandeCadeau/
+│   └── Infrastructure/
+│
+└── Shared/                         # Shared Kernel
+    ├── Domain/
+    │   ├── Port/
+    │   │   └── IdGeneratorInterface.php
+    │   └── ValueObject/
+    │       └── Email.php
+    ├── Infrastructure/
+    │   ├── Generator/
+    │   │   └── UuidV7Generator.php
+    │   └── Persistence/Doctrine/Type/
+    │       └── EmailType.php
+    ├── Pagination/
+    │   └── Domain/ValueObject/
+    └── Search/
+        └── Domain/ValueObject/
 ```
+
+### 2.3 Flux de Données
+
+Le flux d'exécution suit le pattern suivant :
+
+```
+Requête HTTP
+  ↓
+Controller (UI Layer)
+  ↓
+Command/Query (Application Layer)
+  ↓
+Handler (Application Layer)
+  ↓
+Domain Model (Domain Layer)
+  ↓
+Repository Interface (Domain Port)
+  ↓
+Repository Implementation (Infrastructure Adapter)
+  ↓
+Base de données
+```
+
+### 2.4 Dépendances
+
+Les dépendances suivent la règle de dépendance vers l'intérieur :
+
+- **Domain** : Aucune dépendance externe (PHP pur)
+- **Application** : Dépend uniquement du Domain
+- **Infrastructure** : Implémente les ports du Domain
+- **UI** : Utilise Application et Infrastructure
 
 ---
 
-## 🚀 Installation
+## 3. Installation
 
-### Prérequis
+### 3.1 Prérequis
 
-- PHP 8.1+
-- Composer
+- PHP 8.1 ou supérieur
+- Composer 2.x
 - Symfony CLI
-- Base de données (MySQL/PostgreSQL/SQLite)
+- Base de données compatible Doctrine (MySQL, PostgreSQL, SQLite)
 
-### Étapes
+### 3.2 Procédure d'Installation
+
+#### Étape 1 : Clonage du Dépôt
 
 ```bash
-# 1. Cloner le projet
-git clone <repo-url> hexagonal-demo
-cd hexagonal-demo
+git clone https://github.com/ahmed-bhs/symfony-hexagonal-architecture-demo.git
+cd symfony-hexagonal-architecture-demo
+```
 
-# 2. Installer les dépendances
+#### Étape 2 : Installation des Dépendances
+
+```bash
 composer install
+```
 
-# 3. Configurer la base de données
-# Éditer .env et configurer DATABASE_URL
+#### Étape 3 : Configuration de la Base de Données
 
-# 4. Créer la base de données
+Éditer le fichier `.env` et configurer la variable `DATABASE_URL` :
+
+```bash
+DATABASE_URL="mysql://user:password@127.0.0.1:3306/hexagonal_demo"
+```
+
+#### Étape 4 : Création de la Base de Données
+
+```bash
 php bin/console doctrine:database:create
-
-# 5. Générer le schéma
 php bin/console doctrine:schema:create
+```
 
-# 6. Charger les fixtures
+#### Étape 5 : Chargement des Données de Test
+
+```bash
 php bin/console doctrine:fixtures:load
+```
 
-# 7. Démarrer le serveur
+#### Étape 6 : Démarrage du Serveur
+
+```bash
 symfony server:start
 ```
 
-### Accès
-
-Ouvrir: **http://localhost:8000**
+L'application est accessible à l'adresse : `http://localhost:8000`
 
 ---
 
-## 💻 Utilisation
+## 4. Utilisation
 
-### Interface Web
+### 4.1 Interface Web
 
-**Page d'accueil**: `/`
-- Dashboard avec statistiques
-- Répartition habitants par âge
-- Compteurs (habitants, cadeaux, attributions)
+#### Page d'Accueil
 
-**Liste habitants**: `/habitants`
-- Affichage de tous les habitants
-- Informations: prénom, nom, âge, email
-- Catégories: Enfant / Adulte / Senior
+Route : `/`
 
-**Catalogue cadeaux**: `/cadeaux`
+Affiche un dashboard avec :
+- Statistiques générales (nombre d'habitants, cadeaux, attributions)
+- Répartition des habitants par catégorie d'âge
+- Liste récente des attributions
+
+#### Liste des Habitants
+
+Route : `/habitants`
+
+Fonctionnalités :
+- Pagination (10 habitants par page)
+- Recherche par nom, prénom ou email
+- Affichage des informations : nom, prénom, âge, email
+- Catégorisation : Enfant (< 18 ans), Adulte (18-64 ans), Senior (≥ 65 ans)
+
+#### Catalogue des Cadeaux
+
+Route : `/cadeaux`
+
+Affiche :
 - Liste des cadeaux disponibles
-- État du stock (disponible/rupture)
+- État du stock (disponible / rupture de stock)
 - Description de chaque cadeau
 
-### Ligne de Commande
+### 4.2 Ligne de Commande
 
 ```bash
 # Lister les habitants
 php bin/console app:list-habitants
 
-# Attribuer un cadeau (si commande CLI implémentée)
-php bin/console app:attribuer-cadeau <habitant-id> <cadeau-id>
+# Charger les fixtures
+php bin/console doctrine:fixtures:load --no-interaction
 ```
 
----
+### 4.3 Utilisation Programmatique
 
-## 📁 Structure du Projet
-
-### Fichiers Clés
-
-```
-hexagonal-demo/
-├── src/
-│   ├── Cadeau/Attribution/         # Module hexagonal complet
-│   ├── Controller/                 # Controllers génériques (Home)
-│   └── DataFixtures/               # Données de test
-│
-├── templates/
-│   ├── home/
-│   │   └── index.html.twig         # Dashboard
-│   └── cadeau/attribution/
-│       ├── list_habitants.html.twig
-│       └── list_cadeaux.html.twig
-│
-├── config/
-│   └── packages/
-│       └── doctrine.yaml           # Configuration Doctrine
-│
-└── AMELIORATIONS-APPLIQUEES.md    # Documentation des améliorations
-```
-
----
-
-## 🔧 Code Généré vs Manuel
-
-### Ce Qui a Été Généré (par le bundle)
-
-✅ **Entities** (3) - 95% fonctionnel
-- Factory methods (create, reconstitute)
-- Validation domain
-- Getters
-
-✅ **ValueObjects** (3) - 100% fonctionnel
-- UUID validation (HabitantId)
-- Age validation + helpers
-- Email validation + helpers
-
-✅ **Repositories** (3 interfaces + 3 adapters) - 100% fonctionnel
-- CRUD de base (save, findById, delete, findAll)
-- Méthodes de recherche (findByEmail, existsByEmail)
-- Requêtes DQL optimisées
-
-✅ **CommandHandler** - 80% fonctionnel
-- Injection des dépendances
-- Validation des entités
-- Logique de création
-
-✅ **QueryHandler + Response** - 100% fonctionnel
-- Handler avec repository
-- Response avec méthode toArray()
-
-### Ce Qui a Été Écrit Manuellement
-
-❌ **Controllers Web** (3)
-- ListHabitantsController
-- ListCadeauxController
-- HomeController
-
-❌ **Templates Twig** (3)
-- Dashboard
-- Liste habitants
-- Liste cadeaux
-
-❌ **Fixtures** (3)
-- HabitantFixtures
-- CadeauFixtures
-- AttributionFixtures
-
-❌ **Méthodes métier dans Cadeau**
-- diminuerStock()
-- augmenterStock()
-- isEnStock()
-- etc.
-
-### Ratio
-
-| Catégorie | Lignes Générées | Lignes Manuelles | % Auto |
-|-----------|----------------|------------------|--------|
-| **Domain** | ~400 | ~150 | 73% |
-| **Application** | ~200 | ~50 | 80% |
-| **Infrastructure** | ~250 | 0 | 100% |
-| **UI** | 0 | ~350 | 0% |
-| **Data** | 0 | ~200 | 0% |
-| **TOTAL** | **~850** | **~750** | **53%** |
-
-**Note**: Si on exclut UI et Data (spécifiques à la demo), le ratio est **85% généré automatiquement**.
-
----
-
-## 🌐 API & Endpoints
-
-### Routes Web
-
-| Méthode | Route | Contrôleur | Description |
-|---------|-------|------------|-------------|
-| GET | `/` | HomeController | Dashboard principal |
-| GET | `/habitants` | ListHabitantsController | Liste des habitants |
-| GET | `/cadeaux` | ListCadeauxController | Catalogue des cadeaux |
-
-### Commandes Symfony Messenger
+#### Dispatcher une Commande
 
 ```php
-// Dispatcher une commande
-$command = new AttribuerCadeauxCommand(
-    habitantId: 'uuid-habitant',
-    cadeauId: 'uuid-cadeau'
-);
-$commandBus->dispatch($command);
+use App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommand;
 
-// Dispatcher une query
-$query = new RecupererHabitantsQuery();
-$envelope = $queryBus->dispatch($query);
+$command = new AttribuerCadeauxCommand(
+    habitantId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+    cadeauId: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+);
+
+$this->commandBus->dispatch($command);
+```
+
+#### Dispatcher une Query
+
+```php
+use App\Cadeau\Attribution\Application\RecupererHabitants\RecupererHabitantsQuery;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
+
+$query = new RecupererHabitantsQuery(
+    page: 1,
+    perPage: 10,
+    searchTerm: ''
+);
+
+$envelope = $this->queryBus->dispatch($query);
 $response = $envelope->last(HandledStamp::class)->getResult();
+
+foreach ($response->habitants as $habitant) {
+    // Traitement
+}
 ```
 
 ---
 
-## 🧪 Tests
+## 5. Structure du Projet
 
-### Lancer les Tests
+### 5.1 Répertoires Principaux
+
+| Répertoire | Description |
+|------------|-------------|
+| `src/Cadeau/Attribution/` | Bounded context pour l'attribution de cadeaux |
+| `src/Cadeau/Demande/` | Bounded context pour les demandes de cadeaux |
+| `src/Shared/` | Shared Kernel (éléments partagés entre contextes) |
+| `tests/` | Tests unitaires, intégration et fonctionnels |
+| `config/` | Configuration de l'application |
+| `templates/` | Templates Twig |
+
+### 5.2 Configuration
+
+#### Doctrine
+
+Fichier : `config/packages/doctrine.yaml`
+
+Configuration des mappings XML et types custom :
+
+```yaml
+doctrine:
+    dbal:
+        types:
+            habitant_id: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\HabitantIdType
+            age: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\AgeType
+            email_vo: App\Shared\Infrastructure\Persistence\Doctrine\Type\EmailType
+    orm:
+        mappings:
+            CadeauAttribution:
+                type: xml
+                dir: '%kernel.project_dir%/src/Cadeau/Attribution/Infrastructure/Persistence/Doctrine/Orm/Mapping'
+                prefix: App\Cadeau\Attribution\Domain\Model
+```
+
+#### Services
+
+Fichier : `config/services.yaml`
+
+Binding des ports aux adapters :
+
+```yaml
+services:
+    # ID Generation Port (Shared)
+    App\Shared\Domain\Port\IdGeneratorInterface:
+        class: App\Shared\Infrastructure\Generator\UuidV7Generator
+
+    # Repository Ports
+    App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface:
+        class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineHabitantRepository
+```
+
+### 5.3 Conventions de Nommage
+
+- **Entities** : Nom au singulier (ex: `Habitant.php`)
+- **Value Objects** : Nom descriptif (ex: `Age.php`, `Email.php`)
+- **Commands** : Verbe à l'infinitif + nom (ex: `AttribuerCadeauxCommand.php`)
+- **Queries** : Verbe + nom (ex: `RecupererHabitantsQuery.php`)
+- **Handlers** : Nom de la commande/query + `Handler` (ex: `AttribuerCadeauxCommandHandler.php`)
+- **Repositories** : Nom de l'entité + `Repository` (ex: `DoctrineHabitantRepository.php`)
+
+---
+
+## 6. Tests
+
+### 6.1 Pyramide de Tests
+
+Le projet suit la pyramide de tests classique :
+
+```
+      E2E (5%)
+     /        \
+    /  Func.   \
+   /   (10%)    \
+  /______________\
+ /                \
+/  Integration     \
+/     (20%)         \
+/____________________\
+/                    \
+/    Unit Tests       \
+/       (65%)          \
+/______________________\
+```
+
+### 6.2 Types de Tests
+
+#### Tests Unitaires (Unit)
+
+Emplacement : `tests/Unit/`
+
+Couvrent :
+- Value Objects (Age, Email, HabitantId)
+- Entities (Cadeau, DemandeCadeau)
+- Logique métier pure
+
+Exécution :
+```bash
+vendor/bin/phpunit tests/Unit/
+```
+
+#### Tests d'Intégration (Integration)
+
+Emplacement : `tests/Integration/`
+
+Couvrent :
+- Handlers avec repositories InMemory
+- Orchestration Application → Domain
+
+Exécution :
+```bash
+vendor/bin/phpunit tests/Integration/
+```
+
+#### Tests Fonctionnels (Functional)
+
+Emplacement : `tests/Functional/`
+
+Couvrent :
+- Configuration du kernel Symfony
+- Injection de dépendances
+- Configuration des buses de messages
+
+Exécution :
+```bash
+vendor/bin/phpunit tests/Functional/
+```
+
+### 6.3 Exécution des Tests
 
 ```bash
 # Tous les tests
-php bin/phpunit
+vendor/bin/phpunit
 
-# Tests spécifiques
-php bin/phpunit tests/Unit/
-php bin/phpunit tests/Integration/
+# Avec rapport détaillé
+vendor/bin/phpunit --testdox
+
+# Avec couverture (nécessite Xdebug)
+vendor/bin/phpunit --coverage-html coverage/
 ```
 
-### Tests Disponibles
+### 6.4 Résultats
 
-- Unit tests pour CommandHandler
-- Unit tests pour ValueObjects
-- Integration tests avec database
-
----
-
-## 📚 Documentation Complémentaire
-
-- [AMELIORATIONS-APPLIQUEES.md](AMELIORATIONS-APPLIQUEES.md) - Détail des améliorations du bundle
-- [Architecture Hexagonale](../hexagonal-maker-bundle/ARCHITECTURE.md) - Guide complet
-- [Bundle GitHub](https://github.com/ahmed-bhs/hexagonal-maker-bundle) - Documentation du bundle
+Au moment de la rédaction :
+- **21 tests** exécutés
+- **34 assertions**
+- **100% de réussite**
+- Temps d'exécution : ~125ms
 
 ---
 
-## 🎓 Apprendre l'Architecture Hexagonale
+## 7. Documentation
 
-### Concepts Démontrés
+### 7.1 Documentation Technique
 
-1. **Domain Purity** - Le domain ne dépend de rien
-   - Voir: `src/Cadeau/Attribution/Domain/Model/`
+- `ARCHITECTURE_PURE_100.md` : Analyse de la pureté architecturale
+- `docs/ARCHITECTURE_UUID_V7.md` : Migration vers UUID v7
+- `docs/ANALYSE_PRINCIPES_VIOLATION.md` : Analyse des violations YAGNI/DRY/SoC/SOLID
+- `docs/ANALYSE_SHARED_KERNEL.md` : Documentation du Shared Kernel
+- `docs/TESTS_COMPLETS.md` : Vue d'ensemble de la suite de tests
+- `docs/TESTS_DOMAIN.md` : Documentation des tests du domaine
+- `tests/PYRAMIDE_TESTS_HEXAGONAL.md` : Guide de la pyramide de tests
 
-2. **Dependency Inversion** - Domain définit les interfaces
-   - Voir: `src/Cadeau/Attribution/Domain/Port/`
+### 7.2 Concepts Clés
 
-3. **CQRS Pattern** - Séparation lecture/écriture
-   - Voir: Commands vs Queries
+#### Architecture Hexagonale
 
-4. **ValueObjects** - Validation encapsulée
-   - Voir: Age, Email, HabitantId
+L'architecture hexagonale isole le domaine métier des détails techniques. Les dépendances pointent toujours vers l'intérieur :
 
-5. **Factory Pattern** - Création contrôlée
-   - Voir: `Cadeau::create()`, `Attribution::create()`
+- **Domain** : Contient la logique métier pure
+- **Application** : Orchestre les use cases
+- **Infrastructure** : Implémente les détails techniques
+- **UI** : Points d'entrée de l'application
 
-### Exercices
+#### Domain-Driven Design
 
-1. Ajouter une nouvelle entité "Magasin"
-2. Créer une Query "RecupererCadeauxEnStock"
-3. Implémenter un Command "RetirerCadeau"
-4. Ajouter un ValueObject "Quantite"
+Patterns DDD utilisés :
+
+- **Entities** : Objets avec identité (Habitant, Cadeau, Attribution)
+- **Value Objects** : Objets définis par leurs attributs (Age, Email, HabitantId)
+- **Repositories** : Abstraction de la persistance
+- **Bounded Contexts** : Attribution et Demande
+- **Shared Kernel** : Éléments partagés (Email, IdGenerator, Pagination)
+
+#### CQRS
+
+Séparation stricte entre :
+
+- **Commands** : Opérations d'écriture (création, modification, suppression)
+- **Queries** : Opérations de lecture (consultation, recherche)
+
+Chaque opération a son propre handler dédié.
+
+### 7.3 Principes Appliqués
+
+- **SOLID** : Respect des 5 principes de conception objet
+- **DRY** : Pas de duplication de code
+- **YAGNI** : Seulement le code nécessaire
+- **SoC** : Séparation claire des responsabilités
 
 ---
 
-## 🤝 Contribuer
+## Annexes
 
-Ce projet est une démonstration. Pour contribuer au bundle:
-https://github.com/ahmed-bhs/hexagonal-maker-bundle
+### A. Références
 
----
+- [Architecture Hexagonale - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Domain-Driven Design - Eric Evans](https://domainlanguage.com/ddd/)
+- [CQRS Pattern - Martin Fowler](https://martinfowler.com/bliki/CQRS.html)
+- [Symfony Documentation](https://symfony.com/doc/current/index.html)
 
-## 📄 License
+### B. Glossaire
 
-MIT
+- **Port** : Interface définissant un contrat
+- **Adapter** : Implémentation concrète d'un port
+- **Bounded Context** : Frontière dans laquelle un modèle est défini
+- **Value Object** : Objet immuable défini par ses attributs
+- **Entity** : Objet avec identité et cycle de vie
+- **Aggregate** : Cluster d'objets traités comme une unité
 
----
+### C. Licence
 
-## 🙏 Remerciements
+MIT License - Voir fichier LICENSE
 
-- **hexagonal-maker-bundle** - Pour la génération automatique
-- **Symfony** - Pour le framework
-- **Doctrine** - Pour l'ORM
-- **Bootstrap** - Pour le design
+### D. Auteur
 
----
+Ahmed EBEN HASSINE
+Email : ahmedbhs123@gmail.com
+GitHub : https://github.com/ahmed-bhs
 
-**Auteur**: Ahmed EBEN HASSINE + Claude AI
-**Date**: 2026-01-08
-**Version**: 1.0.0
+Date : Janvier 2026
+Version : 1.0.0
