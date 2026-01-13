@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Cadeau\Attribution\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
 /**
  * Domain Value Object.
@@ -25,33 +25,6 @@ final readonly class Email
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             throw new \InvalidArgumentException(sprintf('Invalid email format: "%s"', $value));
         }
-    }
-
-    public static function fromString(string $value): self
-    {
-        return new self($value);
-    }
-
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
-    }
-
-    public function getDomain(): string
-    {
-        $parts = explode('@', $this->value);
-        return $parts[1] ?? '';
-    }
-
-    public function getLocalPart(): string
-    {
-        $parts = explode('@', $this->value);
-        return $parts[0] ?? '';
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
     }
 
     public function __toString(): string

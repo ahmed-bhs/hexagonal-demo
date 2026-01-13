@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type;
+namespace App\Shared\Infrastructure\Persistence\Doctrine\Type;
 
-use App\Cadeau\Attribution\Domain\ValueObject\Email;
+use App\Shared\Domain\ValueObject\Email;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 

@@ -24,16 +24,6 @@ final readonly class SearchTerm
         }
     }
 
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
-    }
-
     public function isEmpty(): bool
     {
         return trim($this->value) === '';

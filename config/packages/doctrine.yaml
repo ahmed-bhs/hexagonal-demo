@@ -4,7 +4,7 @@ doctrine:
         types:
             habitant_id: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\HabitantIdType
             age: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\AgeType
-            email_vo: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\Type\EmailType
+            email_vo: App\Shared\Infrastructure\Persistence\Doctrine\Type\EmailType
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
     orm:
@@ -15,12 +15,6 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
-            App:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: App\Entity
-                alias: App
             CadeauAttribution:
                 type: xml
                 is_bundle: false

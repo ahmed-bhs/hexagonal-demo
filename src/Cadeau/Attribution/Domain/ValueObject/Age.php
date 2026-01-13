@@ -27,16 +27,6 @@ final readonly class Age
         }
     }
 
-    public static function fromInt(int $value): self
-    {
-        return new self($value);
-    }
-
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
-    }
-
     public function isAdult(): bool
     {
         return $this->value >= 18;
@@ -52,13 +42,8 @@ final readonly class Age
         return $this->value < 18;
     }
 
-    public function toString(): string
-    {
-        return (string) $this->value;
-    }
-
     public function __toString(): string
     {
-        return $this->toString();
+        return (string) $this->value;
     }
 }

@@ -6,19 +6,34 @@ namespace App\Cadeau\Demande\Application\SoumettreDemandeCadeau;
 
 use App\Cadeau\Demande\Domain\Model\DemandeCadeau;
 use App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface;
+use App\Shared\Domain\Port\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * Command Handler.
  *
  * Handles the execution of SoumettreDemandeCadeauCommand.
  * Contains the business logic for this write operation.
+ *
+ * ✅ HEXAGONAL ARCHITECTURE - 100% PURE:
+ * This handler now depends ONLY on Domain ports (interfaces).
+ * No infrastructure dependencies (Symfony Uid removed).
+ *
+ * Dependencies (all from Domain layer):
+ * - IdGeneratorInterface: Port for generating unique IDs
+ * - DemandeCadeauRepositoryInterface: Port for demande cadeau persistence
+ *
+ * Benefits of using IdGeneratorInterface:
+ * ✅ Application layer has ZERO infrastructure dependencies
+ * ✅ Can swap UUID v7 for ULID, Snowflake, etc. without touching this code
+ * ✅ Testable with FakeIdGenerator (deterministic IDs in tests)
+ * ✅ Follows Dependency Inversion Principle
  */
 #[AsMessageHandler]
 final readonly class SoumettreDemandeCadeauCommandHandler
 {
     public function __construct(
+        private IdGeneratorInterface $idGenerator,
         private DemandeCadeauRepositoryInterface $demandeCadeauRepository,
     ) {
     }
@@ -26,7 +41,7 @@ final readonly class SoumettreDemandeCadeauCommandHandler
     public function __invoke(SoumettreDemandeCadeauCommand $command): void
     {
         $demande = DemandeCadeau::create(
-            id: Uuid::v4()->toRfc4122(),
+            id: $this->idGenerator->generate(),  // ✅ Uses port instead of direct Symfony Uid
             nomDemandeur: $command->nomDemandeur,
             emailDemandeur: $command->emailDemandeur,
             telephoneDemandeur: $command->telephoneDemandeur,

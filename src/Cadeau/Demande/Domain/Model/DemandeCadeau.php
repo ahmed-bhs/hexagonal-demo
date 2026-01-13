@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Cadeau\Demande\Domain\Model;
 
+use App\Shared\Domain\ValueObject\Email;
+
 /**
  * Domain Entity.
  *
@@ -23,7 +25,7 @@ class DemandeCadeau
 {
     private string $id;
     private string $nomDemandeur;
-    private string $emailDemandeur;
+    private Email $emailDemandeur;
     private string $telephoneDemandeur;
     private string $cadeauSouhaite;
     private string $motivation;
@@ -33,7 +35,7 @@ class DemandeCadeau
     private function __construct(
         string $id,
         string $nomDemandeur,
-        string $emailDemandeur,
+        Email $emailDemandeur,
         string $telephoneDemandeur,
         string $cadeauSouhaite,
         string $motivation,
@@ -59,9 +61,10 @@ class DemandeCadeau
         if (empty($nomDemandeur)) {
             throw new \InvalidArgumentException('Le nom du demandeur ne peut pas être vide');
         }
-        if (!filter_var($emailDemandeur, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException('Email invalide');
-        }
+
+        // Validation email déléguée au Value Object
+        $email = new Email($emailDemandeur);
+
         if (empty($cadeauSouhaite)) {
             throw new \InvalidArgumentException('Le cadeau souhaité ne peut pas être vide');
         }
@@ -69,23 +72,7 @@ class DemandeCadeau
             throw new \InvalidArgumentException('La motivation ne peut pas être vide');
         }
 
-        return new self($id, $nomDemandeur, $emailDemandeur, $telephoneDemandeur, $cadeauSouhaite, $motivation);
-    }
-
-    public static function reconstitute(
-        string $id,
-        string $nomDemandeur,
-        string $emailDemandeur,
-        string $telephoneDemandeur,
-        string $cadeauSouhaite,
-        string $motivation,
-        string $statut,
-        \DateTimeImmutable $dateCreation,
-    ): self {
-        $demande = new self($id, $nomDemandeur, $emailDemandeur, $telephoneDemandeur, $cadeauSouhaite, $motivation);
-        $demande->statut = $statut;
-        $demande->dateCreation = $dateCreation;
-        return $demande;
+        return new self($id, $nomDemandeur, $email, $telephoneDemandeur, $cadeauSouhaite, $motivation);
     }
 
     public function getId(): string
@@ -98,7 +85,7 @@ class DemandeCadeau
         return $this->nomDemandeur;
     }
 
-    public function getEmailDemandeur(): string
+    public function getEmailDemandeur(): Email
     {
         return $this->emailDemandeur;
     }

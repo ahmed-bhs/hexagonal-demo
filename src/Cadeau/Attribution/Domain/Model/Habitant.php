@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Cadeau\Attribution\Domain\Model;
 
 use App\Cadeau\Attribution\Domain\ValueObject\Age;
-use App\Cadeau\Attribution\Domain\ValueObject\Email;
+use App\Shared\Domain\ValueObject\Email;
 use App\Cadeau\Attribution\Domain\ValueObject\HabitantId;
 
 /**
@@ -95,16 +95,6 @@ class Habitant
     public function getEmail(): Email
     {
         return $this->email;
-    }
-
-    public function changeEmail(Email $newEmail): void
-    {
-        $this->email = $newEmail;
-    }
-
-    public function celebrerAnniversaire(): void
-    {
-        $this->age = new Age($this->age->value + 1);
     }
 
     public function isAdulte(): bool

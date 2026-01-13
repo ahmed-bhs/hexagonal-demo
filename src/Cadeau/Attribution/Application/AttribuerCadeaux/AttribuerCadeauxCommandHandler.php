@@ -8,19 +8,36 @@ use App\Cadeau\Attribution\Domain\Model\Attribution;
 use App\Cadeau\Attribution\Domain\Port\AttributionRepositoryInterface;
 use App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface;
 use App\Cadeau\Attribution\Domain\Port\CadeauRepositoryInterface;
+use App\Shared\Domain\Port\IdGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * Command Handler.
  *
  * Handles the execution of AttribuerCadeauxCommand.
  * Contains the business logic for this write operation.
+ *
+ * ✅ HEXAGONAL ARCHITECTURE - 100% PURE:
+ * This handler now depends ONLY on Domain ports (interfaces).
+ * No infrastructure dependencies (Symfony Uid removed).
+ *
+ * Dependencies (all from Domain layer):
+ * - IdGeneratorInterface: Port for generating unique IDs
+ * - HabitantRepositoryInterface: Port for habitant persistence
+ * - CadeauRepositoryInterface: Port for cadeau persistence
+ * - AttributionRepositoryInterface: Port for attribution persistence
+ *
+ * Benefits of using IdGeneratorInterface:
+ * ✅ Application layer has ZERO infrastructure dependencies
+ * ✅ Can swap UUID v7 for ULID, Snowflake, etc. without touching this code
+ * ✅ Testable with FakeIdGenerator (deterministic IDs in tests)
+ * ✅ Follows Dependency Inversion Principle
  */
 #[AsMessageHandler]
 final readonly class AttribuerCadeauxCommandHandler
 {
     public function __construct(
+        private IdGeneratorInterface $idGenerator,
         private HabitantRepositoryInterface $habitantRepository,
         private CadeauRepositoryInterface $cadeauRepository,
         private AttributionRepositoryInterface $attributionRepository,
@@ -41,9 +58,9 @@ final readonly class AttribuerCadeauxCommandHandler
             throw new \InvalidArgumentException(sprintf('Cadeau with ID "%s" not found', $command->cadeauId));
         }
 
-        // Create attribution
+        // Create attribution with generated ID
         $attribution = Attribution::create(
-            Uuid::v4()->toRfc4122(),
+            $this->idGenerator->generate(),  // ✅ Uses port instead of direct Symfony Uid
             $command->habitantId,
             $command->cadeauId
         );

@@ -12,6 +12,7 @@ use App\Shared\Pagination\Domain\ValueObject\PerPage;
 use App\Shared\Pagination\Domain\ValueObject\Total;
 use App\Shared\Search\Domain\ValueObject\SearchTerm;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
@@ -72,22 +73,12 @@ final class DoctrineHabitantRepository implements HabitantRepositoryInterface
 
     public function findPaginated(Page $page, PerPage $perPage): PaginatedResult
     {
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('h')
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('h')
             ->from(Habitant::class, 'h')
-            ->orderBy('h.nom', 'ASC')
-            ->setFirstResult(($page->toInt() - 1) * $perPage->toInt())
-            ->setMaxResults($perPage->toInt());
+            ->orderBy('h.nom', 'ASC');
 
-        $paginator = new Paginator($qb->getQuery());
-        $total = new Total(count($paginator));
-
-        return new PaginatedResult(
-            items: iterator_to_array($paginator),
-            currentPage: $page,
-            perPage: $perPage,
-            total: $total
-        );
+        return $this->paginate($qb, $page, $perPage);
     }
 
     public function searchPaginated(SearchTerm $searchTerm, Page $page, PerPage $perPage): PaginatedResult
@@ -96,13 +87,19 @@ final class DoctrineHabitantRepository implements HabitantRepositoryInterface
             return $this->findPaginated($page, $perPage);
         }
 
-        $qb = $this->entityManager->createQueryBuilder();
-        $qb->select('h')
+        $qb = $this->entityManager->createQueryBuilder()
+            ->select('h')
             ->from(Habitant::class, 'h')
             ->where('h.nom LIKE :search OR h.prenom LIKE :search OR h.email LIKE :search')
-            ->setParameter('search', '%' . $searchTerm->toString() . '%')
-            ->orderBy('h.nom', 'ASC')
-            ->setFirstResult(($page->toInt() - 1) * $perPage->toInt())
+            ->setParameter('search', '%' . $searchTerm->value . '%')
+            ->orderBy('h.nom', 'ASC');
+
+        return $this->paginate($qb, $page, $perPage);
+    }
+
+    private function paginate(QueryBuilder $qb, Page $page, PerPage $perPage): PaginatedResult
+    {
+        $qb->setFirstResult(($page->toInt() - 1) * $perPage->toInt())
             ->setMaxResults($perPage->toInt());
 
         $paginator = new Paginator($qb->getQuery());

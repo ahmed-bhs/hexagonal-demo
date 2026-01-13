@@ -24,6 +24,54 @@ use Symfony\Component\Routing\Attribute\Route;
  * - Rendering responses (templates, JSON, etc.)
  *
  * This controller is a PRIMARY ADAPTER (driving adapter) that drives the application core.
+ *
+ * ALTERNATIVE APPROACH (API-FIRST with MapRequestPayload):
+ * For REST API endpoints, you can use MapRequestPayload for queries too.
+ *
+ * Example with MapRequestPayload (REST API approach):
+ *
+ * use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+ *
+ * #[Route('/api/habitants', name: 'api.cadeau.attribution.list_habitants', methods: ['GET'])]
+ * public function __invoke(
+ *     #[MapQueryString] RecupererHabitantsQuery $query
+ * ): Response {
+ *     try {
+ *         $envelope = $this->queryBus->dispatch($query);
+ *         $handledStamp = $envelope->last(HandledStamp::class);
+ *         $response = $handledStamp->getResult();
+ *
+ *         return $this->json([
+ *             'habitants' => $response->toArray(),
+ *             'pagination' => [
+ *                 'currentPage' => $response->currentPage,
+ *                 'perPage' => $response->perPage,
+ *                 'total' => $response->total,
+ *                 'totalPages' => $response->totalPages,
+ *                 'hasNextPage' => $response->hasNextPage,
+ *                 'hasPreviousPage' => $response->hasPreviousPage,
+ *             ]
+ *         ]);
+ *
+ *     } catch (\InvalidArgumentException $e) {
+ *         return $this->json([
+ *             'status' => 'error',
+ *             'message' => $e->getMessage()
+ *         ], Response::HTTP_BAD_REQUEST);
+ *     }
+ * }
+ *
+ * With this approach:
+ * - Query parameters are automatically mapped to Query object
+ * - Query is immutable (readonly)
+ * - Same Query can be used from CLI, Queue, GraphQL, etc.
+ * - Controller is ultra-thin
+ *
+ * Example HTTP Request:
+ * GET /api/habitants?page=1&perPage=10&searchTerm=John
+ *
+ * Note: Use #[MapQueryString] for GET requests (query params)
+ *       Use #[MapRequestPayload] for POST/PUT requests (request body)
  */
 #[Route('/habitants', name: 'app.cadeau.attribution.list_habitants')]
 final class ListHabitantsController extends AbstractController
