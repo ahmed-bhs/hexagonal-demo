@@ -81,7 +81,8 @@ src/Cadeau/
 │   ├── Application/                # Use Cases
 │   │   ├── AttribuerCadeaux/
 │   │   │   ├── AttribuerCadeauxCommand.php
-│   │   │   └── AttribuerCadeauxCommandHandler.php
+│   │   │   ├── AttribuerCadeauxCommandHandler.php
+│   │   │   └── AttribuerCadeauxCommandValidator.php
 │   │   └── RecupererHabitants/
 │   │       ├── RecupererHabitantsQuery.php
 │   │       └── RecupererHabitantsQueryHandler.php
@@ -108,13 +109,19 @@ src/Cadeau/
     ├── Domain/
     │   ├── Port/
     │   │   └── IdGeneratorInterface.php
-    │   └── ValueObject/
-    │       └── Email.php
+    │   ├── ValueObject/
+    │   │   └── Email.php
+    │   └── Validation/
+    │       ├── ValidatorInterface.php
+    │       ├── ValidationError.php
+    │       └── ValidationException.php
     ├── Infrastructure/
     │   ├── Generator/
     │   │   └── UuidV7Generator.php
-    │   └── Persistence/Doctrine/Type/
-    │       └── EmailType.php
+    │   ├── Persistence/Doctrine/Type/
+    │   │   └── EmailType.php
+    │   └── Validation/
+    │       └── SymfonyValidatorAdapter.php
     ├── Pagination/
     │   └── Domain/ValueObject/
     └── Search/
@@ -324,6 +331,32 @@ doctrine:
                 prefix: App\Cadeau\Attribution\Domain\Model
 ```
 
+#### Validation
+
+Fichier : `config/packages/validator.yaml`
+
+Configuration pour charger les contraintes YAML (approche hexagonale) :
+
+```yaml
+framework:
+    validation:
+        mapping:
+            paths:
+                - '%kernel.project_dir%/config/validator'
+```
+
+Fichier : `config/validator/demande_cadeau_command.yaml`
+
+Contraintes de validation externalisées (NotBlank, Email, Length, Regex) :
+
+```yaml
+App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommand:
+    properties:
+        emailDemandeur:
+            - NotBlank: ~
+            - Email: ~
+```
+
 #### Services
 
 Fichier : `config/services.yaml`
@@ -339,6 +372,17 @@ services:
     # Repository Ports
     App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface:
         class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineHabitantRepository
+
+    # Validation Ports
+    # Validateur pur PHP (pour AttribuerCadeauxCommand)
+    App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandHandler:
+        arguments:
+            $validator: '@App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator'
+
+    # Adaptateur Symfony Validator (pour commands avec contraintes YAML)
+    App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommandHandler:
+        arguments:
+            $validator: '@App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter'
 ```
 
 ### 5.3 Conventions de Nommage
@@ -433,10 +477,10 @@ vendor/bin/phpunit --coverage-html coverage/
 ### 6.4 Résultats
 
 Au moment de la rédaction :
-- **21 tests** exécutés
-- **34 assertions**
+- **31 tests** exécutés
+- **51 assertions**
 - **100% de réussite**
-- Temps d'exécution : ~125ms
+- Temps d'exécution : ~149ms
 
 ---
 
