@@ -9,6 +9,7 @@ use App\Cadeau\Attribution\Domain\Port\AttributionRepositoryInterface;
 use App\Cadeau\Attribution\Domain\Port\HabitantRepositoryInterface;
 use App\Cadeau\Attribution\Domain\Port\CadeauRepositoryInterface;
 use App\Shared\Domain\Port\IdGeneratorInterface;
+use App\Shared\Domain\Validation\ValidatorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -41,11 +42,15 @@ final readonly class AttribuerCadeauxCommandHandler
         private HabitantRepositoryInterface $habitantRepository,
         private CadeauRepositoryInterface $cadeauRepository,
         private AttributionRepositoryInterface $attributionRepository,
+        private ValidatorInterface $validator,
     ) {
     }
 
     public function __invoke(AttribuerCadeauxCommand $command): void
     {
+        // Validate command (Domain validation)
+        $this->validator->validateOrFail($command);
+
         // Validate that habitant exists
         $habitant = $this->habitantRepository->findById($command->habitantId);
         if (!$habitant) {

@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Cadeau\Attribution\Application;
 
 use App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommand;
 use App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandHandler;
+use App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator;
 use App\Cadeau\Attribution\Domain\Model\Attribution;
 use App\Cadeau\Attribution\Domain\Model\Cadeau;
 use App\Cadeau\Attribution\Domain\Model\Habitant;
@@ -46,7 +47,8 @@ final class AttribuerCadeauxHandlerTest extends TestCase
             $this->idGenerator,
             $this->habitantRepository,
             $this->cadeauRepository,
-            $this->attributionRepository
+            $this->attributionRepository,
+            new AttribuerCadeauxCommandValidator()
         );
     }
 
@@ -91,17 +93,19 @@ final class AttribuerCadeauxHandlerTest extends TestCase
     public function it_rejects_attribution_when_habitant_not_found(): void
     {
         // Arrange
-        $cadeau = Cadeau::create('cad-456', 'Vélo', 'Vélo de ville', 10);
+        $cadeauId = '550e8400-e29b-41d4-a716-446655440003';
+        $cadeau = Cadeau::create($cadeauId, 'Vélo', 'Vélo de ville', 10);
         $this->cadeauRepository->save($cadeau);
 
+        $nonExistentHabitantId = '550e8400-e29b-41d4-a716-446655440099';
         $command = new AttribuerCadeauxCommand(
-            habitantId: 'non-existent',
-            cadeauId: 'cad-456'
+            habitantId: $nonExistentHabitantId,
+            cadeauId: $cadeauId
         );
 
         // Assert
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Habitant with ID "non-existent" not found');
+        $this->expectExceptionMessage('Habitant with ID "' . $nonExistentHabitantId . '" not found');
 
         // Act
         $this->handler->__invoke($command);
@@ -122,14 +126,15 @@ final class AttribuerCadeauxHandlerTest extends TestCase
         );
         $this->habitantRepository->save($habitant);
 
+        $nonExistentCadeauId = '550e8400-e29b-41d4-a716-446655440098';
         $command = new AttribuerCadeauxCommand(
             habitantId: $habitantId,
-            cadeauId: 'non-existent'
+            cadeauId: $nonExistentCadeauId
         );
 
         // Assert
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cadeau with ID "non-existent" not found');
+        $this->expectExceptionMessage('Cadeau with ID "' . $nonExistentCadeauId . '" not found');
 
         // Act
         $this->handler->__invoke($command);

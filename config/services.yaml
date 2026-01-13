@@ -36,3 +36,10 @@ services:
         class: App\Cadeau\Attribution\Infrastructure\Persistence\Doctrine\DoctrineAttributionRepository
     App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface:
         class: App\Cadeau\Demande\Infrastructure\Persistence\Doctrine\DoctrineDemandeCadeauRepository
+
+    # Validation Port (pour AttribuerCadeauxCommand)
+    App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator: ~
+
+    App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandHandler:
+        arguments:
+            $validator: '@App\Cadeau\Attribution\Application\AttribuerCadeaux\AttribuerCadeauxCommandValidator'
