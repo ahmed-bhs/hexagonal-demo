@@ -65,93 +65,93 @@ Domain (centre)
 
 ```
 src/Cadeau/
-├── Attribution/                    # Bounded Context 1
-│   ├── Domain/
-│   │   ├── Model/                  # Entities
-│   │   │   ├── Attribution.php
-│   │   │   ├── Cadeau.php
-│   │   │   └── Habitant.php
-│   │   ├── Port/                   # Interfaces
-│   │   │   ├── AttributionRepositoryInterface.php
-│   │   │   ├── CadeauRepositoryInterface.php
-│   │   │   └── HabitantRepositoryInterface.php
-│   │   └── ValueObject/            # Value Objects
-│   │       ├── Age.php
-│   │       └── HabitantId.php
-│   ├── Application/                # Use Cases
-│   │   ├── AttribuerCadeaux/
-│   │   │   ├── AttribuerCadeauxCommand.php
-│   │   │   ├── AttribuerCadeauxCommandHandler.php
-│   │   │   └── AttribuerCadeauxCommandValidator.php
-│   │   ├── RecupererCadeaux/
-│   │   │   ├── RecupererCadeauxQuery.php
-│   │   │   ├── RecupererCadeauxQueryHandler.php
-│   │   │   └── RecupererCadeauxResponse.php
-│   │   ├── RecupererHabitants/
-│   │   │   ├── RecupererHabitantsQuery.php
-│   │   │   ├── RecupererHabitantsQueryHandler.php
-│   │   │   └── RecupererHabitantsResponse.php
-│   │   └── RecupererStatistiques/
-│   │       ├── RecupererStatistiquesQuery.php
-│   │       ├── RecupererStatistiquesQueryHandler.php
-│   │       └── RecupererStatistiquesResponse.php
-│   ├── Infrastructure/             # Adapters
-│   │   └── Persistence/Doctrine/
-│   │       ├── DoctrineAttributionRepository.php
-│   │       ├── DoctrineCadeauRepository.php
-│   │       ├── DoctrineHabitantRepository.php
-│   │       └── Type/
-│   │           ├── AgeType.php
-│   │           └── HabitantIdType.php
-│   └── UI/Http/Web/Controller/     # Primary Adapters
-│       ├── ListCadeauxController.php
-│       └── ListHabitantsController.php
+├── Attribution/                                    # Bounded Context 1 : Gestion attribution cadeaux
+│   ├── Domain/                                     # Logique métier pure (aucune dépendance)
+│   │   ├── Model/                                  # Entities avec identité et cycle de vie
+│   │   │   ├── Attribution.php                     # Représente l'attribution d'un cadeau à un habitant
+│   │   │   ├── Cadeau.php                          # Représente un cadeau avec stock
+│   │   │   └── Habitant.php                        # Représente un habitant avec ses caractéristiques
+│   │   ├── Port/                                   # Interfaces (contrats) définies par le Domain
+│   │   │   ├── AttributionRepositoryInterface.php  # Port pour persistance des attributions
+│   │   │   ├── CadeauRepositoryInterface.php       # Port pour persistance des cadeaux
+│   │   │   └── HabitantRepositoryInterface.php     # Port pour persistance des habitants
+│   │   └── ValueObject/                            # Objets immuables définis par leurs valeurs
+│   │       ├── Age.php                             # Encapsule l'âge avec règles métier (adulte, senior)
+│   │       └── HabitantId.php                      # Identifiant typé pour Habitant
+│   ├── Application/                                # Use Cases (orchestration Domain)
+│   │   ├── AttribuerCadeaux/                       # Use Case : Attribuer un cadeau
+│   │   │   ├── AttribuerCadeauxCommand.php         # DTO d'entrée (write operation)
+│   │   │   ├── AttribuerCadeauxCommandHandler.php  # Orchestration logique métier
+│   │   │   └── AttribuerCadeauxCommandValidator.php # Validation pure PHP (UUID)
+│   │   ├── RecupererCadeaux/                       # Use Case : Lister les cadeaux
+│   │   │   ├── RecupererCadeauxQuery.php           # DTO d'entrée (read operation)
+│   │   │   ├── RecupererCadeauxQueryHandler.php    # Lecture sans modification
+│   │   │   └── RecupererCadeauxResponse.php        # DTO de sortie
+│   │   ├── RecupererHabitants/                     # Use Case : Lister les habitants (pagination, recherche)
+│   │   │   ├── RecupererHabitantsQuery.php         # DTO avec critères pagination/recherche
+│   │   │   ├── RecupererHabitantsQueryHandler.php  # Lecture avec pagination
+│   │   │   └── RecupererHabitantsResponse.php      # DTO avec résultats paginés
+│   │   └── RecupererStatistiques/                  # Use Case : Statistiques globales
+│   │       ├── RecupererStatistiquesQuery.php      # DTO d'entrée
+│   │       ├── RecupererStatistiquesQueryHandler.php # Agrégation données
+│   │       └── RecupererStatistiquesResponse.php   # DTO avec stats (nombre habitants, cadeaux, etc.)
+│   ├── Infrastructure/                             # Adapters (implémentations concrètes)
+│   │   └── Persistence/Doctrine/                   # Adapter pour persistance via Doctrine ORM
+│   │       ├── DoctrineAttributionRepository.php   # Implémente AttributionRepositoryInterface
+│   │       ├── DoctrineCadeauRepository.php        # Implémente CadeauRepositoryInterface
+│   │       ├── DoctrineHabitantRepository.php      # Implémente HabitantRepositoryInterface
+│   │       └── Type/                               # Types Doctrine custom pour Value Objects
+│   │           ├── AgeType.php                     # Mapping Age (VO) → int (DB)
+│   │           └── HabitantIdType.php              # Mapping HabitantId (VO) → string (DB)
+│   └── UI/Http/Web/Controller/                     # Primary Adapters (points d'entrée HTTP)
+│       ├── ListCadeauxController.php               # Contrôleur affichage liste cadeaux
+│       └── ListHabitantsController.php             # Contrôleur affichage liste habitants
 │
-├── Demande/                        # Bounded Context 2
-│   ├── Domain/
+├── Demande/                                        # Bounded Context 2 : Gestion demandes cadeaux
+│   ├── Domain/                                     # Logique métier pure
 │   │   ├── Model/
-│   │   │   └── DemandeCadeau.php
+│   │   │   └── DemandeCadeau.php                   # Représente une demande de cadeau (soumise par un demandeur)
 │   │   └── Port/
-│   │       └── DemandeCadeauRepositoryInterface.php
-│   ├── Application/
-│   │   └── SoumettreDemandeCadeau/
-│   │       ├── SoumettreDemandeCadeauCommand.php
-│   │       └── SoumettreDemandeCadeauCommandHandler.php
-│   ├── Infrastructure/
+│   │       └── DemandeCadeauRepositoryInterface.php # Port pour persistance des demandes
+│   ├── Application/                                # Use Cases
+│   │   └── SoumettreDemandeCadeau/                 # Use Case : Soumettre une demande de cadeau
+│   │       ├── SoumettreDemandeCadeauCommand.php   # DTO avec données demande (nom, email, téléphone, motivation)
+│   │       └── SoumettreDemandeCadeauCommandHandler.php # Orchestration création demande + validation Symfony
+│   ├── Infrastructure/                             # Adapters
 │   │   └── Persistence/Doctrine/
-│   │       └── DoctrineDemandeCadeauRepository.php
-│   └── UI/Http/Web/
+│   │       └── DoctrineDemandeCadeauRepository.php # Implémente DemandeCadeauRepositoryInterface
+│   └── UI/Http/Web/                                # Primary Adapters
 │       ├── Controller/
-│       │   └── DemandeCadeauFormController.php
+│       │   └── DemandeCadeauFormController.php     # Contrôleur formulaire soumission demande
 │       └── Form/
-│           └── DemandeCadeauType.php
+│           └── DemandeCadeauType.php               # Type de formulaire Symfony
 │
-└── Shared/                         # Shared Kernel
-    ├── Domain/
+└── Shared/                                         # Shared Kernel : Éléments partagés entre contextes
+    ├── Domain/                                     # Concepts métier partagés
     │   ├── Port/
-    │   │   └── IdGeneratorInterface.php
-    │   ├── Validation/
-    │   │   ├── ValidationError.php
-    │   │   ├── ValidationException.php
-    │   │   └── ValidatorInterface.php
+    │   │   └── IdGeneratorInterface.php            # Port pour génération IDs (UUID v7, ULID, etc.)
+    │   ├── Validation/                             # Validation hexagonale
+    │   │   ├── ValidationError.php                 # Représente une erreur de validation (field + message)
+    │   │   ├── ValidationException.php             # Exception levée lors d'échec validation
+    │   │   └── ValidatorInterface.php              # Port pour validation (2 implémentations : PHP pur, Symfony)
     │   └── ValueObject/
-    │       └── Email.php
-    ├── Infrastructure/
+    │       └── Email.php                           # VO Email (utilisé par Attribution et Demande)
+    ├── Infrastructure/                             # Adapters partagés
     │   ├── Generator/
-    │   │   └── UuidV7Generator.php
+    │   │   └── UuidV7Generator.php                 # Implémente IdGeneratorInterface (UUID v7 time-ordered)
     │   ├── Persistence/Doctrine/Type/
-    │   │   └── EmailType.php
+    │   │   └── EmailType.php                       # Type Doctrine pour Email VO
     │   └── Validation/
-    │       └── SymfonyValidatorAdapter.php
-    ├── Pagination/
+    │       └── SymfonyValidatorAdapter.php         # Adapte Symfony Validator à ValidatorInterface
+    ├── Pagination/                                 # Pagination réutilisable
     │   └── Domain/ValueObject/
-    │       ├── Page.php
-    │       ├── PaginatedResult.php
-    │       ├── PerPage.php
-    │       └── Total.php
-    └── Search/
+    │       ├── Page.php                            # Numéro de page
+    │       ├── PaginatedResult.php                 # Résultat paginé (items + metadata)
+    │       ├── PerPage.php                         # Nombre items par page
+    │       └── Total.php                           # Nombre total d'items
+    └── Search/                                     # Recherche réutilisable
         └── Domain/ValueObject/
-            └── SearchTerm.php
+            └── SearchTerm.php                      # Terme de recherche validé
 ```
 
 ### 2.3 Flux de Données
