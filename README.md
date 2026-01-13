@@ -2,92 +2,11 @@
 
 Application de démonstration de l'architecture hexagonale avec Symfony
 
-## Prérequis de Lecture
+## Prérequis
 
-**Principe fondamental à comprendre** : L'**Inversion de Dépendance** (Dependency Inversion Principle - DIP)
+**Principe D (Dependency Inversion)** : Les dépendances pointent vers l'intérieur. Le Domain définit les interfaces (Ports), l'Infrastructure les implémente (Adapters).
 
-### Le Principe D de SOLID
-
-En architecture traditionnelle, les dépendances pointent vers le bas :
-
-```
-UI → Business Logic → Database
-```
-
-Le problème : la logique métier dépend des détails techniques (base de données, framework).
-
-**Le Principe D inverse cette relation** : les modules de haut niveau ne doivent pas dépendre des modules de bas niveau. Les deux doivent dépendre d'abstractions.
-
-```
-Domain (centre)
-   ↑
-   | définit les interfaces (Ports)
-   |
-Infrastructure implémente ces interfaces (Adapters)
-```
-
-### Règle des Dépendances dans ce Projet
-
-**Ce qui EST autorisé** :
-
-```
-Application → Domain ✅
-Infrastructure → Domain ✅
-UI → Application ✅
-UI → Infrastructure ✅
-```
-
-**Ce qui est INTERDIT** :
-
-```
-Domain → Application ❌
-Domain → Infrastructure ❌
-Domain → UI ❌
-Application → Infrastructure ❌ (sauf via injection de Ports)
-```
-
-### Exemple Concret
-
-**Mauvaise approche** (dépendance directe) :
-
-```php
-// ❌ Domain dépend de Doctrine (Infrastructure)
-class Habitant {
-    public function save() {
-        $entityManager->persist($this);  // Couplage !
-    }
-}
-```
-
-**Bonne approche** (inversion de dépendance) :
-
-```php
-// ✅ Domain définit l'interface (Port)
-interface HabitantRepositoryInterface {
-    public function save(Habitant $habitant): void;
-}
-
-// ✅ Infrastructure implémente (Adapter)
-class DoctrineHabitantRepository implements HabitantRepositoryInterface {
-    public function save(Habitant $habitant): void {
-        $this->entityManager->persist($habitant);
-    }
-}
-
-// ✅ Application utilise l'interface
-class CreerHabitantHandler {
-    public function __construct(
-        private HabitantRepositoryInterface $repository
-    ) {}
-
-    public function handle(Command $cmd): void {
-        $habitant = Habitant::create(...);
-        $this->repository->save($habitant);  // Via interface !
-    }
-}
-```
-
-**Résultat** : Le Domain ne connaît pas Doctrine. On peut changer de base de données sans toucher au Domain.
+**Règle** : Domain ne dépend de rien. Application dépend du Domain. Infrastructure implémente les Ports du Domain.
 
 ---
 
