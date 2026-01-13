@@ -63,8 +63,7 @@ src/Cadeau/
 │   │   │   └── Attribution.php
 │   │   ├── ValueObject/            # Value Objects
 │   │   │   ├── HabitantId.php
-│   │   │   ├── Age.php
-│   │   │   └── Email.php
+│   │   │   └── Age.php
 │   │   └── Port/                   # Interfaces
 │   │       ├── HabitantRepositoryInterface.php
 │   │       ├── CadeauRepositoryInterface.php
