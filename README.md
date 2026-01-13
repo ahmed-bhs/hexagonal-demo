@@ -67,7 +67,7 @@ Domain (centre)
 src/Cadeau/
 ├── Attribution/                                    # Bounded Context 1 : Gestion attribution cadeaux
 │   ├── Domain/                                     # Logique métier pure (aucune dépendance)
-│   │   ├── Model/                                  # Entities avec identité et cycle de vie
+│   │   ├── Model/                                  # Entities DDD (identité + cycle de vie, pur PHP sans Doctrine)
 │   │   │   ├── Attribution.php                     # Représente l'attribution d'un cadeau à un habitant
 │   │   │   ├── Cadeau.php                          # Représente un cadeau avec stock
 │   │   │   └── Habitant.php                        # Représente un habitant avec ses caractéristiques
@@ -100,6 +100,10 @@ src/Cadeau/
 │   │       ├── DoctrineAttributionRepository.php   # Implémente AttributionRepositoryInterface
 │   │       ├── DoctrineCadeauRepository.php        # Implémente CadeauRepositoryInterface
 │   │       ├── DoctrineHabitantRepository.php      # Implémente HabitantRepositoryInterface
+│   │       ├── Orm/Mapping/                        # Mapping Doctrine XML (externalisé du Domain)
+│   │       │   ├── Attribution.orm.xml             # Mapping Attribution Entity → DB
+│   │       │   ├── Cadeau.orm.xml                  # Mapping Cadeau Entity → DB
+│   │       │   └── Habitant.orm.xml                # Mapping Habitant Entity → DB
 │   │       └── Type/                               # Types Doctrine custom pour Value Objects
 │   │           ├── AgeType.php                     # Mapping Age (VO) → int (DB)
 │   │           └── HabitantIdType.php              # Mapping HabitantId (VO) → string (DB)
@@ -110,7 +114,7 @@ src/Cadeau/
 ├── Demande/                                        # Bounded Context 2 : Gestion demandes cadeaux
 │   ├── Domain/                                     # Logique métier pure
 │   │   ├── Model/
-│   │   │   └── DemandeCadeau.php                   # Représente une demande de cadeau (soumise par un demandeur)
+│   │   │   └── DemandeCadeau.php                   # Entity DDD (pur PHP sans Doctrine)
 │   │   └── Port/
 │   │       └── DemandeCadeauRepositoryInterface.php # Port pour persistance des demandes
 │   ├── Application/                                # Use Cases
@@ -119,7 +123,9 @@ src/Cadeau/
 │   │       └── SoumettreDemandeCadeauCommandHandler.php # Orchestration création demande + validation Symfony
 │   ├── Infrastructure/                             # Adapters
 │   │   └── Persistence/Doctrine/
-│   │       └── DoctrineDemandeCadeauRepository.php # Implémente DemandeCadeauRepositoryInterface
+│   │       ├── DoctrineDemandeCadeauRepository.php # Implémente DemandeCadeauRepositoryInterface
+│   │       └── Orm/Mapping/
+│   │           └── DemandeCadeau.orm.xml           # Mapping DemandeCadeau Entity → DB
 │   └── UI/Http/Web/                                # Primary Adapters
 │       ├── Controller/
 │       │   └── DemandeCadeauFormController.php     # Contrôleur formulaire soumission demande
