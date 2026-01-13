@@ -68,16 +68,16 @@ src/Cadeau/
 ├── Attribution/                                    # Bounded Context 1 : Gestion attribution cadeaux
 │   ├── Domain/                                     # Logique métier pure (aucune dépendance)
 │   │   ├── Model/                                  # Entities DDD (identité + cycle de vie, pur PHP sans Doctrine)
-│   │   │   ├── Attribution.php                     # Représente l'attribution d'un cadeau à un habitant
-│   │   │   ├── Cadeau.php                          # Représente un cadeau avec stock
-│   │   │   └── Habitant.php                        # Représente un habitant avec ses caractéristiques
+│   │   │   ├── Attribution.php                     # Aggregate Root : Attribution d'un cadeau à un habitant (id, habitantId, cadeauId, dateAttribution)
+│   │   │   ├── Cadeau.php                          # Entity : Cadeau avec gestion stock (id, nom, description, quantite)
+│   │   │   └── Habitant.php                        # Entity : Habitant destinataire (HabitantId, prenom, nom, Age, Email)
 │   │   ├── Port/                                   # Interfaces (contrats) définies par le Domain
 │   │   │   ├── AttributionRepositoryInterface.php  # Port pour persistance des attributions
 │   │   │   ├── CadeauRepositoryInterface.php       # Port pour persistance des cadeaux
 │   │   │   └── HabitantRepositoryInterface.php     # Port pour persistance des habitants
 │   │   └── ValueObject/                            # Objets immuables définis par leurs valeurs
-│   │       ├── Age.php                             # Encapsule l'âge avec règles métier (adulte, senior)
-│   │       └── HabitantId.php                      # Identifiant typé pour Habitant
+│   │       ├── Age.php                             # VO : Age avec règles métier (value: int, isAdult(), isSenior(), isChild())
+│   │       └── HabitantId.php                      # VO : Identifiant typé pour Habitant (value: string UUID)
 │   ├── Application/                                # Use Cases (orchestration Domain)
 │   │   ├── AttribuerCadeaux/                       # Use Case : Attribuer un cadeau
 │   │   │   ├── AttribuerCadeauxCommand.php         # DTO d'entrée (write operation)
@@ -114,7 +114,7 @@ src/Cadeau/
 ├── Demande/                                        # Bounded Context 2 : Gestion demandes cadeaux
 │   ├── Domain/                                     # Logique métier pure
 │   │   ├── Model/
-│   │   │   └── DemandeCadeau.php                   # Entity DDD (pur PHP sans Doctrine)
+│   │   │   └── DemandeCadeau.php                   # Aggregate Root : Demande de cadeau par un demandeur (id, nomDemandeur, Email, telephone, cadeauSouhaite, motivation, statut, dateCreation)
 │   │   └── Port/
 │   │       └── DemandeCadeauRepositoryInterface.php # Port pour persistance des demandes
 │   ├── Application/                                # Use Cases
@@ -141,7 +141,7 @@ src/Cadeau/
     │   │   ├── ValidationException.php             # Exception levée lors d'échec validation
     │   │   └── ValidatorInterface.php              # Port pour validation (2 implémentations : PHP pur, Symfony)
     │   └── ValueObject/
-    │       └── Email.php                           # VO Email (utilisé par Attribution et Demande)
+    │       └── Email.php                           # VO : Email avec validation format (value: string, partagé entre contextes)
     ├── Infrastructure/                             # Adapters partagés
     │   ├── Generator/
     │   │   └── UuidV7Generator.php                 # Implémente IdGeneratorInterface (UUID v7 time-ordered)
@@ -151,13 +151,13 @@ src/Cadeau/
     │       └── SymfonyValidatorAdapter.php         # Adapte Symfony Validator à ValidatorInterface
     ├── Pagination/                                 # Pagination réutilisable
     │   └── Domain/ValueObject/
-    │       ├── Page.php                            # Numéro de page
-    │       ├── PaginatedResult.php                 # Résultat paginé (items + metadata)
-    │       ├── PerPage.php                         # Nombre items par page
-    │       └── Total.php                           # Nombre total d'items
+    │       ├── Page.php                            # VO : Numéro de page (value: int >= 1)
+    │       ├── PaginatedResult.php                 # VO : Résultat paginé (items: array, page, perPage, total)
+    │       ├── PerPage.php                         # VO : Items par page (value: int entre 1 et 100)
+    │       └── Total.php                           # VO : Nombre total items (value: int >= 0)
     └── Search/                                     # Recherche réutilisable
         └── Domain/ValueObject/
-            └── SearchTerm.php                      # Terme de recherche validé
+            └── SearchTerm.php                      # VO : Terme de recherche (value: string, normalisé)
 ```
 
 ### 2.3 Flux de Données
