@@ -7,7 +7,6 @@ namespace App\Cadeau\Demande\Application\Command\SoumettreDemandeCadeau;
 use App\Cadeau\Demande\Domain\Model\DemandeCadeau;
 use App\Cadeau\Demande\Domain\Port\DemandeCadeauRepositoryInterface;
 use App\Shared\Domain\Port\IdGeneratorInterface;
-use App\Shared\Domain\Validation\ValidatorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -23,7 +22,10 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
  * Dependencies (all from Domain layer):
  * - IdGeneratorInterface: Port for generating unique IDs
  * - DemandeCadeauRepositoryInterface: Port for gift request persistence
- * - ValidatorInterface: Port for validation (uses Symfony Validator via adapter)
+ *
+ * Validation:
+ * ✅ Done by ValidationMiddleware BEFORE this handler is called
+ * ✅ Handler can assume command is already validated
  *
  * Domain Events Flow (Automatic):
  * 1. DemandeCadeau::create() records GiftRequestSubmitted event internally
@@ -46,14 +48,13 @@ final readonly class SoumettreDemandeCadeauCommandHandler
     public function __construct(
         private IdGeneratorInterface $idGenerator,
         private DemandeCadeauRepositoryInterface $demandeCadeauRepository,
-        private ValidatorInterface $validator,
     ) {
     }
 
     public function __invoke(SoumettreDemandeCadeauCommand $command): void
     {
-        // Validate command (using Symfony Validator via adapter)
-        $this->validator->validateOrFail($command);
+        // ✅ No validation needed - ValidationMiddleware already validated
+        // If we reach here, the command is valid
 
         // Create aggregate - domain event is recorded internally
         // The aggregate (DemandeCadeau) records GiftRequestSubmitted event via AggregateRoot trait

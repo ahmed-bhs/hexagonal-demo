@@ -65,24 +65,24 @@ services:
         class: App\Cadeau\Demande\Infrastructure\Persistence\Doctrine\DoctrineDemandeCadeauRepository
 
     # Validation Port Implementations
+    # Note: AttribuerCadeauCommand uses Value Objects for self-validation
+    # Note: SoumettreDemandeCadeauCommand uses ValidationMiddleware for Symfony Validator
 
-    # Validateur pur PHP (pour AttribuerCadeauCommand)
-    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandValidator: ~
-
-    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandHandler:
-        arguments:
-            $validator: '@App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandValidator'
-
-    # Adaptateur Symfony Validator (pour commands avec contraintes Symfony)
-    App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter:
+    # Messenger Middleware - Validation (Infrastructure)
+    validation:
+        class: App\Shared\Infrastructure\Messenger\Middleware\ValidationMiddleware
         arguments:
             $validator: '@validator'
+        tags:
+            - { name: 'messenger.middleware' }
 
-    App\Cadeau\Demande\Application\Command\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommandHandler:
+    # Custom Validators (Infrastructure)
+    # These validators delegate to Domain logic (no duplication of business rules)
+    App\Shared\Infrastructure\Validator\Constraint\CadeauDisponibleValidator:
         arguments:
-            $validator: '@App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter'
-        # ✅ No more manual event dispatching - events are collected in aggregate
-        #    and automatically published by DomainEventPublisherListener after flush
+            $cadeauRepository: '@App\Cadeau\Attribution\Domain\Port\CadeauRepositoryInterface'
+        tags:
+            - { name: 'validator.constraint_validator' }
 
     # Doctrine Listener (Infrastructure - auto-publishes domain events)
     App\Shared\Infrastructure\Persistence\Doctrine\DomainEventPublisherListener:

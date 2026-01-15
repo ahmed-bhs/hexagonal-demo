@@ -105,4 +105,43 @@ class Cadeau
     {
         return $this->quantite >= $quantiteDemandee;
     }
+
+    /**
+     * Business Rule: A gift can be attributed if stock is available.
+     *
+     * ✅ SINGLE SOURCE OF TRUTH for this business rule.
+     * This method is called by:
+     * - CadeauDisponibleValidator (Infrastructure - preliminary validation)
+     * - AttribuerCadeauCommandHandler (Application - final validation)
+     *
+     * @return bool True if the gift can be attributed (stock > 0)
+     */
+    public function peutEtreAttribue(): bool
+    {
+        return $this->quantite > 0;
+    }
+
+    /**
+     * Business Rule: Decrease stock atomically with validation.
+     *
+     * ✅ ATOMIC OPERATION: Validates and decreases stock in one method.
+     * This protects against race conditions when called inside a transaction.
+     *
+     * Flow:
+     * 1. Check if gift is available (peutEtreAttribue)
+     * 2. If not -> throw exception (rollback transaction)
+     * 3. If yes -> decrease stock
+     *
+     * @throws \DomainException If stock is insufficient
+     */
+    public function diminuerStock(): void
+    {
+        if (!$this->peutEtreAttribue()) {
+            throw new \DomainException(
+                sprintf('Cannot attribute gift "%s" - out of stock', $this->nom)
+            );
+        }
+
+        $this->quantite--;
+    }
 }
