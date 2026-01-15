@@ -66,12 +66,12 @@ services:
 
     # Validation Port Implementations
 
-    # Validateur pur PHP (pour AttribuerCadeauxCommand)
-    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauxCommandValidator: ~
+    # Validateur pur PHP (pour AttribuerCadeauCommand)
+    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandValidator: ~
 
-    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauxCommandHandler:
+    App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandHandler:
         arguments:
-            $validator: '@App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauxCommandValidator'
+            $validator: '@App\Cadeau\Attribution\Application\Command\AttribuerCadeau\AttribuerCadeauCommandValidator'
 
     # Adaptateur Symfony Validator (pour commands avec contraintes Symfony)
     App\Shared\Infrastructure\Validation\SymfonyValidatorAdapter:

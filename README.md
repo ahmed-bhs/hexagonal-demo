@@ -42,9 +42,11 @@ Le système gère la distribution de cadeaux aux habitants selon les règles sui
 ### 1.3 Patterns Appliqués
 
 - **Architecture Hexagonale** : Séparation Domain / Application / Infrastructure
-- **Domain-Driven Design** : Entities, Value Objects, Repositories
+- **Domain-Driven Design** : Entities, Value Objects, Repositories, Domain Events
 - **CQRS** : Séparation Commands / Queries
+- **Event Sourcing** : Événements domaine avec EventStore
 - **Dependency Inversion** : Interfaces (Ports) définies dans le Domain
+- **JWT Authentication** : Authentification stateless avec JSON Web Tokens
 
 ---
 
@@ -217,19 +219,33 @@ cd symfony-hexagonal-architecture-demo
 composer install
 ```
 
-#### Étape 3 : Configuration de la Base de Données
+**Note:** Le package `firebase/php-jwt` est déjà inclus dans les dépendances pour l'authentification JWT.
 
-Éditer le fichier `.env` et configurer la variable `DATABASE_URL` :
+#### Étape 3 : Configuration de l'Application
+
+Éditer le fichier `.env` et configurer les variables nécessaires :
 
 ```bash
+# Base de données
 DATABASE_URL="mysql://user:password@127.0.0.1:3306/hexagonal_demo"
+# ou PostgreSQL (recommandé)
+DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
+
+# JWT Authentication (IMPORTANT: Changer en production)
+JWT_SECRET=your-jwt-secret-key-change-in-production-min-256-bits-please
+JWT_ISSUER=hexagonal-demo-app
+```
+
+**Sécurité:** Générer un secret JWT sécurisé pour la production :
+```bash
+php -r "echo bin2hex(random_bytes(32)) . PHP_EOL;"
 ```
 
 #### Étape 4 : Création de la Base de Données
 
 ```bash
 php bin/console doctrine:database:create
-php bin/console doctrine:schema:create
+php bin/console doctrine:migrations:migrate
 ```
 
 #### Étape 5 : Chargement des Données de Test
@@ -250,7 +266,48 @@ L'application est accessible à l'adresse : `http://localhost:8000`
 
 ## 4. Utilisation
 
-### 4.1 Interface Web
+### 4.1 API d'Authentification JWT
+
+L'application inclut un système d'authentification JWT complet. Voir la documentation complète dans `docs/JWT_AUTHENTICATION_HEXAGONAL.md`.
+
+#### Inscription
+```bash
+curl -X POST http://localhost:8000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+```
+
+#### Connexion
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "secret123"}'
+```
+
+Réponse:
+```json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": "...",
+      "email": "user@example.com",
+      "roles": ["ROLE_USER"]
+    }
+  }
+}
+```
+
+#### Accès aux ressources protégées
+```bash
+curl -X GET http://localhost:8000/api/auth/me \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+**Documentation complète:** Voir `docs/JWT_AUTHENTICATION_HEXAGONAL.md` et `docs/JWT_SETUP.md`
+
+### 4.2 Interface Web
 
 #### Page d'Accueil
 
@@ -520,13 +577,23 @@ Au moment de la rédaction :
 
 ### 7.1 Documentation Technique
 
-- `ARCHITECTURE_PURE_100.md` : Analyse de la pureté architecturale
-- `docs/ARCHITECTURE_UUID_V7.md` : Migration vers UUID v7
-- `docs/ANALYSE_PRINCIPES_VIOLATION.md` : Analyse des violations YAGNI/DRY/SoC/SOLID
-- `docs/ANALYSE_SHARED_KERNEL.md` : Documentation du Shared Kernel
-- `docs/TESTS_COMPLETS.md` : Vue d'ensemble de la suite de tests
-- `docs/TESTS_DOMAIN.md` : Documentation des tests du domaine
-- `tests/PYRAMIDE_TESTS_HEXAGONAL.md` : Guide de la pyramide de tests
+#### Architecture
+- **`docs/README.md`** ⭐ - Index de toute la documentation
+- **`docs/APPLICATION_LAYER_STRUCTURE.md`** - Structure complète de la couche Application (CQRS)
+- **`docs/SHARED_KERNEL_ARCHITECTURE.md`** - SharedDomain vs SharedInfrastructure
+- **`docs/REFACTORING_SUMMARY.md`** - Résumé du refactoring CQRS
+- **`docs/UI_LAYER_STRUCTURE.md`** - Structure de la couche UI
+
+#### JWT Authentication
+- **`docs/JWT_AUTHENTICATION_HEXAGONAL.md`** ⭐ - Guide complet (26+ pages)
+- **`docs/JWT_SETUP.md`** - Installation et tests API
+- **`JWT_IMPLEMENTATION_SUMMARY.md`** - Résumé visuel de l'implémentation
+
+#### Autres
+- **`COMMANDS.md`** - Toutes les commandes utiles du projet
+- `ARCHITECTURE_PURE_100.md` - Analyse de la pureté architecturale
+- `docs/TESTS_COMPLETS.md` - Vue d'ensemble de la suite de tests
+- `tests/PYRAMIDE_TESTS_HEXAGONAL.md` - Guide de la pyramide de tests
 
 ### 7.2 Concepts Clés
 
