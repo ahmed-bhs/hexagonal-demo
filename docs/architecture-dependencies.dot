@@ -1,0 +1,56 @@
+digraph "" {
+subgraph "cluster_Domain" {
+label="Domain"
+"Domain" [
+group="Domain"
+]
+}
+subgraph "cluster_Application" {
+label="Application"
+"Application" [
+group="Application"
+]
+}
+subgraph "cluster_Infrastructure" {
+label="Infrastructure"
+"Infrastructure" [
+group="Infrastructure"
+]
+}
+subgraph "cluster_UI" {
+label="UI"
+"UI" [
+group="UI"
+]
+}
+subgraph "cluster_Framework" {
+label="Framework"
+"Symfony" [
+group="Framework"
+]
+}
+"Application" -> "SharedDomain" [
+label="15"
+]
+"Application" -> "Domain" [
+label="20"
+]
+"Domain" -> "SharedDomain" [
+label="18"
+]
+"Infrastructure" -> "Domain" [
+label="67"
+]
+"UI" -> "Application" [
+label="7"
+]
+"SharedInfrastructure" -> "SharedDomain" [
+label="27"
+]
+"SharedDomain" [
+
+]
+"SharedInfrastructure" [
+
+]
+}

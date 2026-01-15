@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cadeau\Attribution\UI\Http\Web\Controller;
 
-use App\Cadeau\Attribution\Application\RecupererCadeaux\RecupererCadeauxQuery;
+use App\Cadeau\Attribution\Application\Query\RecupererCadeaux\RecupererCadeauxQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;

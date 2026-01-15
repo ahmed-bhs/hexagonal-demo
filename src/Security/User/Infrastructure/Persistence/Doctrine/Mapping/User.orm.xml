@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <!--
+    Doctrine mapping for User aggregate
+
+    Pure XML mapping (no annotations in Domain).
+    Domain remains framework-agnostic.
+    -->
+    <entity name="App\Security\User\Domain\Model\User" table="users">
+        <!-- Primary Key (UserId Value Object) -->
+        <embedded name="id" class="App\Security\User\Domain\ValueObject\UserId" use-column-prefix="false">
+            <field name="value" type="string" column="id" length="36" unique="true"/>
+        </embedded>
+
+        <id name="id.value" />
+
+        <!-- Email (Email Value Object) -->
+        <embedded name="email" class="App\Security\User\Domain\ValueObject\Email" use-column-prefix="false">
+            <field name="value" type="string" column="email" length="255" unique="true"/>
+        </embedded>
+
+        <!-- Password (HashedPassword Value Object) -->
+        <embedded name="password" class="App\Security\User\Domain\ValueObject\HashedPassword" use-column-prefix="false">
+            <field name="value" type="string" column="password" length="255"/>
+        </embedded>
+
+        <!-- Roles (JSON array) -->
+        <field name="roles" type="json"/>
+
+        <!-- Timestamps -->
+        <field name="createdAt" type="datetime_immutable" column="created_at"/>
+        <field name="lastLoginAt" type="datetime_immutable" column="last_login_at" nullable="true"/>
+    </entity>
+
+</doctrine-mapping>

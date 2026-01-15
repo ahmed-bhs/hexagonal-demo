@@ -4,21 +4,27 @@ declare(strict_types=1);
 
 namespace App\Cadeau\Attribution\Domain\Model;
 
+use App\Cadeau\Attribution\Domain\Event\GiftAttributed;
+use App\Shared\Domain\Aggregate\AggregateRoot;
+
 /**
- * Domain Entity.
+ * Aggregate Root: Gift Attribution.
  *
- * Represents a domain concept with identity and lifecycle.
- * Contains business logic and enforces invariants.
+ * Represents the attribution of a gift to a resident.
+ * This is an aggregate root that records domain events.
+ *
+ * Domain Events:
+ * - GiftAttributed: When a gift is successfully attributed to a resident
  *
  * In hexagonal architecture, entities are part of the Domain layer (core)
  * and are completely independent of infrastructure concerns.
  *
  * ⚠️ IMPORTANT: This entity is PURE - no framework dependencies.
- * Doctrine ORM mapping is configured separately in:
- * Infrastructure/Persistence/Doctrine/Orm/Mapping/Attribution.orm.yml
+ * Doctrine ORM mapping is configured separately in XML.
  */
 class Attribution
 {
+    use AggregateRoot;
     private string $id;
     private string $habitantId;
     private string $cadeauId;
@@ -46,6 +52,38 @@ class Attribution
         $this->dateAttribution = $dateAttribution;
     }
 
+    public static function createWithDetails(
+        string $id,
+        string $habitantId,
+        string $habitantName,
+        string $habitantEmail,
+        string $cadeauId,
+        string $cadeauName
+    ): self {
+        $attribution = new self(
+            $id,
+            $habitantId,
+            $cadeauId,
+            new \DateTimeImmutable()
+        );
+
+        // Record domain event - will be published by infrastructure after successful flush
+        $attribution->recordThat(new GiftAttributed(
+            attributionId: $attribution->id,
+            habitantId: $attribution->habitantId,
+            habitantName: $habitantName,
+            habitantEmail: $habitantEmail,
+            giftId: $attribution->cadeauId,
+            giftName: $cadeauName,
+            attributedAt: $attribution->dateAttribution
+        ));
+
+        return $attribution;
+    }
+
+    /**
+     * @deprecated Use createWithDetails() instead to ensure domain event has full context
+     */
     public static function create(
         string $id,
         string $habitantId,

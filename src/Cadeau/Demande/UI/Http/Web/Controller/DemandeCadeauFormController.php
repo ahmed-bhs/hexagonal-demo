@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cadeau\Demande\UI\Http\Web\Controller;
 
-use App\Cadeau\Demande\Application\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommand;
+use App\Cadeau\Demande\Application\Command\SoumettreDemandeCadeau\SoumettreDemandeCadeauCommand;
 use App\Cadeau\Demande\UI\Http\Web\Form\DemandeCadeauType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

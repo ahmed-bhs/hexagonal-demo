@@ -1,29 +1,53 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # Password hashers configuration (for JWT authentication)
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+        # Named hasher for our password hasher adapter
+        common:
+            algorithm: auto
+            cost: 12
+
+    # Providers - not needed for JWT (stateless)
     providers:
+        # Dummy provider (JWT is stateless, doesn't use provider)
         users_in_memory: { memory: null }
+
+    # Firewalls
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # Public endpoints (no authentication required)
+        public:
+            pattern: ^/api/auth/(login|register)
+            security: false
+
+        # Protected API endpoints (JWT required)
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticators:
+                - App\Security\Authentication\Infrastructure\Security\JwtAuthenticator
+
+        # Legacy main firewall (keep for compatibility)
         main:
             lazy: true
             provider: users_in_memory
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    # Access control
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # Public routes
+        - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth/register, roles: PUBLIC_ACCESS }
+
+        # Protected routes (require authentication)
+        - { path: ^/api/auth/me, roles: ROLE_USER }
+        - { path: ^/api, roles: ROLE_USER }
+
+    # Role hierarchy (optional)
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
 
 when@test:
     security:

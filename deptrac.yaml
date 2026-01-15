@@ -5,7 +5,19 @@ deptrac:
     - '#.*test.*#i'
 
   layers:
-    # 1. Domain Layer - Le coeur métier pur (aucune dépendance externe)
+    # 0a. Shared Domain - Code métier partagé (concepts DDD purs)
+    - name: SharedDomain
+      collectors:
+        - type: classLike
+          value: App\\Shared\\Domain\\.*
+
+    # 0b. Shared Infrastructure - Code technique partagé
+    - name: SharedInfrastructure
+      collectors:
+        - type: classLike
+          value: App\\Shared\\Infrastructure\\.*
+
+    # 1. Domain Layer - Le coeur métier pur (bounded context specific)
     - name: Domain
       collectors:
         - type: classLike
@@ -46,16 +58,28 @@ deptrac:
     # Si une couche n'est pas listée = elle est INTERDITE
     # ================================================================================
 
-    # Domain Layer - ✅ Ne dépend de PERSONNE (liste vide = aucune dépendance autorisée)
-    Domain: []
+    # Shared Domain - ✅ Ne dépend de PERSONNE (concepts DDD purs)
+    SharedDomain: []
 
-    # Application Layer - ✅ Peut UNIQUEMENT dépendre de Domain
+    # Shared Infrastructure - ✅ Peut dépendre de SharedDomain uniquement
+    SharedInfrastructure:
+      - SharedDomain  # Implémente les ports du Shared Domain
+
+    # Domain Layer - ✅ Peut UNIQUEMENT dépendre de SharedDomain
+    # ⚠️ IMPORTANT: Domain ne peut PAS dépendre de SharedInfrastructure !
+    Domain:
+      - SharedDomain  # Domain PEUT utiliser concepts DDD partagés (AggregateRoot, DomainEvent)
+
+    # Application Layer - ✅ Peut dépendre de Domain et SharedDomain
     Application:
-      - Domain  # Application PEUT dépendre de Domain (Ports, Models, ValueObjects)
+      - Domain        # Application PEUT dépendre de Domain (Ports, Models, ValueObjects)
+      - SharedDomain  # Application PEUT utiliser SharedDomain (DomainEventPublisher port)
 
-    # Infrastructure Layer - ✅ Peut UNIQUEMENT dépendre de Domain
+    # Infrastructure Layer - ✅ Peut dépendre de Domain, SharedDomain, SharedInfrastructure
     Infrastructure:
-      - Domain  # Infrastructure PEUT dépendre de Domain (implémente les Ports, utilise les Models)
+      - Domain               # Infrastructure PEUT dépendre de Domain (implémente les Ports)
+      - SharedDomain         # Infrastructure PEUT utiliser SharedDomain (ports)
+      - SharedInfrastructure # Infrastructure PEUT utiliser SharedInfrastructure (adapters)
 
     # UI Layer - ✅ Peut dépendre de Application et Symfony
     # Ne peut PAS dépendre directement de Domain ou Infrastructure
@@ -63,7 +87,7 @@ deptrac:
       - Application  # UI PEUT dépendre d'Application (Commands, Queries, Responses)
       - Symfony      # UI PEUT utiliser Symfony (Forms, Controllers, etc.)
 
-    # Symfony Layer - ✅ Peut dépendre de Domain, Application, Infrastructure
+    # Symfony Layer - ✅ Peut dépendre de Domain, Application, Infrastructure, Shared
     #
     # JUSTIFICATION : Les DataFixtures sont un cas spécial acceptable
     # - Ce sont des données de test/seed, pas du code métier
@@ -73,9 +97,11 @@ deptrac:
     # IMPORTANT : Les Controllers (HomeController, etc.) respectent CQRS
     # et passent par Application, ils n'accèdent PAS directement au Domain
     Symfony:
-      - Domain          # Pour DataFixtures uniquement (données de test)
-      - Application     # Pour Controllers (CQRS)
-      - Infrastructure  # Pour configuration Doctrine, services
+      - Domain               # Pour DataFixtures uniquement (données de test)
+      - Application          # Pour Controllers (CQRS)
+      - Infrastructure       # Pour configuration Doctrine, services
+      - SharedDomain         # Peut utiliser Shared Domain
+      - SharedInfrastructure # Peut utiliser Shared Infrastructure
 
   formatters:
     graphviz:

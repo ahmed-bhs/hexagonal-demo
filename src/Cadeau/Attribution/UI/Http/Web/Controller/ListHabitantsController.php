@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Cadeau\Attribution\UI\Http\Web\Controller;
 
-use App\Cadeau\Attribution\Application\RecupererHabitants\RecupererHabitantsQuery;
+use App\Cadeau\Attribution\Application\Query\RecupererHabitants\RecupererHabitantsQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
